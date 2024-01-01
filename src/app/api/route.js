@@ -1,7 +1,8 @@
 const mysql = require('mysql2/promise');
 
-export async function GET() {
+export async function GET(request) {
   // create the connection to database
+  console.log('here');
   const connection = await mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -11,14 +12,15 @@ export async function GET() {
 
   // simple query
   const [rows, fields] = await connection.execute(
-    'select * from sailors s, reserves r where s.sid = r.sid;'
+    'select * from users u where u.uid = 1;'
   );
 
   return Response.json({ rows });
 }
 
-export async function POST() {
+export async function POST(request) {
   // create the connection to database
+  console.log('here2');
   const connection = await mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -28,8 +30,10 @@ export async function POST() {
 
   // simple query
   const [rows, fields] = await connection.execute(
-    'select * from reserves r where r.sid = 31;'
+    `select * from users u where u.username = 'aaron';`
   );
+
+  console.log(rows);
 
   return Response.json({ rows });
 }

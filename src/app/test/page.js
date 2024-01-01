@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 
 async function getDataPost() {
   const myInit = {
-    method: "GET", //change to POST or GET
+    method: "POST", //change to POST or GET
     headers: {
-      Accept: "application/json",
+      "Content-Type": "application/json",
     },
   };
   
