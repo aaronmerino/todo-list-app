@@ -44,7 +44,9 @@ const createAccount = async (username, password, db) => {
     throw new Error("Invalid Password");
   }
 
-  if (await getUserFromUsername(username, db).length !== 0) {
+  let user = await getUserFromUsername(username, db);
+
+  if (user.length !== 0) {
     throw new Error("Username not available");
   }
 
