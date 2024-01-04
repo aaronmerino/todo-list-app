@@ -23,7 +23,8 @@ const isValidPassword = (password) => {
 
 const getUserFromUsername = async (username, db) => {
   try {
-    const [rows, fields] = await db.execute(`SELECT * FROM users u WHERE u.username = ${username}`);
+    const [rows, fields] = await db.execute(`SELECT * FROM users u WHERE u.username = '${username}'`);
+    console.log(rows.length);
     return rows;
 
   } catch (error) {
@@ -43,7 +44,7 @@ const createAccount = async (username, password, db) => {
     throw new Error("Invalid Password");
   }
 
-  if (getUserFromUsername(username, db).length === 0) {
+  if (await getUserFromUsername(username, db).length !== 0) {
     throw new Error("Username not available");
   }
 
@@ -51,7 +52,7 @@ const createAccount = async (username, password, db) => {
   let password_hash = hashPassword(password, salt);
 
   try {
-    await db.execute(`INSERT INTO users (username, password_hash, salt) VALUES (${username}, ${password_hash}, ${salt})`);
+    await db.execute(`INSERT INTO users (username, password_hash, salt) VALUES ('${username}', '${password_hash}', '${salt}')`);
   } catch (error) {
     throw new Error(error);
   }
@@ -62,12 +63,8 @@ const createAccount = async (username, password, db) => {
 const createSessionId = async (user_id, db) => {
   let session_id = generateRandStr(32);
 
-  if (user_data.length === 0) {
-    throw new Error("Username not available");
-  }
-
   try {
-    await db.execute(`REPLACE INTO user_sessions (sid, uid) VALUES (${session_id}, ${user_id})`);
+    await db.execute(`REPLACE INTO user_sessions (sid, uid) VALUES ('${session_id}', '${user_id}')`);
   } catch (error) {
     throw new Error(error);
   }
@@ -79,8 +76,6 @@ const login = async (username, password, db) => {
   username = username.trim();
   password = password.trim();
 
-  let user_data = await getUserFromUsername(username, db);
-
   if (!isValidUsername(username)) {
     throw new Error("Invalid Username");
   }
@@ -88,6 +83,8 @@ const login = async (username, password, db) => {
   if (!isValidPassword(password)) {
     throw new Error("Invalid Password");
   }
+
+  let user_data = await getUserFromUsername(username, db);
 
   if (user_data.length === 0) {
     throw new Error("Username not available");
@@ -122,7 +119,34 @@ const login = async (username, password, db) => {
   }
 }
 
-const isValidSessionId = async (session_id, username) => {
+const isValidSessionId = async (session_id, username, db) => {
+  username = username.trim();
+
+  if (!isValidUsername(username)) {
+    throw new Error("Invalid Username");
+  }
+
+  // select datediff(current_timestamp, date('2024-01-01 23:59:59')) = 2;
+  let user_data = await getUserFromUsername(username, db);
+
+  if (user_data.length === 0) {
+    throw new Error("Invalid Username");
+  }
+
+  let user_id = user_data[0].uid;
+
+  try {
+    // Check if session id exists with username and check if session id is at most 2 days
+    const [rows, fields] = await db.execute(`SELECT sid FROM user_sessions s WHERE s.sid = '${session_id}' AND s.uid = '${user_id}' AND DATEDIFF(CURRENT_TIMESTAMP, s.login_time) <= 2`);
+
+    if (rows.length === 0) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    throw new Error(error);
+  }  
 
 }
 
@@ -135,5 +159,6 @@ module.exports = {
   getUserFromUsername,
   createAccount,
   createSessionId,
-  login
+  login,
+  isValidSessionId
 };
