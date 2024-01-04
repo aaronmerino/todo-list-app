@@ -1,5 +1,5 @@
 CREATE TABLE users (
-  uid INT auto_increment,
+  uid INT AUTO_INCREMENT,
   username VARCHAR(50) NOT NULL UNIQUE,
   register_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   password_hash VARCHAR(255) NOT NULL,

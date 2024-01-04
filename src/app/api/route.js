@@ -1,4 +1,5 @@
 const mysql = require('mysql2/promise');
+const Account = require('./accounts');
 
 export async function GET(request) {
   // create the connection to database
