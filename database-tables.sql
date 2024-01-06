@@ -19,6 +19,7 @@ CREATE TABLE user_sessions (
 CREATE TABLE todos (
   tid INT AUTO_INCREMENT,
   uid INT NOT NULL,
+  date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   priority INT,
   description VARCHAR(255),
   completed BOOLEAN DEFAULT 0,

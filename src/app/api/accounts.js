@@ -146,12 +146,109 @@ const isValidSessionId = async (session_id, username, db) => {
     }
 
     return true;
+
   } catch (error) {
     throw new Error(error);
   }  
 
 }
 
+const getUsersTodos = async (username, session_id, db) => {
+  username = username.trim();
+
+  if (!isValidUsername(username)) {
+    throw new Error("Invalid Username");
+  }
+
+  if (!isValidSessionId(session_id, username, db)) {
+    throw new Error("Invalid Session");
+  }
+
+  let user_id = user_data[0].uid;
+
+  try {
+    const [rows, fields] = await db.execute(`SELECT tid, date_created, priority, description, completed FROM todos t WHERE t.uid = '${user_id}'`);
+
+    return rows;
+
+  } catch (error) {
+    throw new Error(error);
+  }  
+}
+
+const insertTodo = async (username, session_id, todo, db) => {
+  username = username.trim();
+
+  if (!isValidUsername(username)) {
+    throw new Error("Invalid Username");
+  }
+
+  if (!isValidSessionId(session_id, username, db)) {
+    throw new Error("Invalid Session");
+  }
+
+  let user_id = user_data[0].uid;
+
+  try {
+    const [rows, fields] = await db.execute(`INSERT INTO todos (uid, priority, description, completed) VALUES (${user_id}, ${todo.priority}, ${todo.description}, ${todo.completed})`);
+
+    return rows;
+
+  } catch (error) {
+    throw new Error(error);
+  }  
+
+}
+
+const getTodo = async (username, session_id, tid, db) => {
+  username = username.trim();
+
+  if (!isValidUsername(username)) {
+    throw new Error("Invalid Username");
+  }
+
+  if (!isValidSessionId(session_id, username, db)) {
+    throw new Error("Invalid Session");
+  }
+    
+  try {
+    const [rows, fields] = await db.execute(`SELECT * FROM todos t WHERE t.tid = '${tid}'`);
+    
+    return rows;
+
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+const editTodo = async (username, session_id, todo, db) => {
+  username = username.trim();
+
+  if (!isValidUsername(username)) {
+    throw new Error("Invalid Username");
+  }
+
+  if (!isValidSessionId(session_id, username, db)) {
+    throw new Error("Invalid Session");
+  }
+  
+  let todo = await getTodo(username, session_id, todo.tid, db);
+
+  if (user.length === 0) {
+    throw new Error("Todo does not exist");
+  }
+
+  let user_id = user_data[0].uid;
+
+  try {
+    const [rows, fields] = await db.execute(`INSERT INTO todos (uid, priority, description, completed) VALUES (${user_id}, ${todo.priority}, ${todo.description}, ${todo.completed})`);
+
+    return rows;
+
+  } catch (error) {
+    throw new Error(error);
+  }  
+}
 
 module.exports = {
   generateRandStr,
@@ -162,5 +259,9 @@ module.exports = {
   createAccount,
   createSessionId,
   login,
-  isValidSessionId
+  isValidSessionId,
+  getUsersTodos,
+  insertTodo,
+  getTodo,
+  editTodo
 };
