@@ -86,16 +86,16 @@ const login = async (username, password, db) => {
     throw new Error("Invalid Password");
   }
 
-  let user_data = await getUserFromUsername(username, db);
+  let user = await getUserFromUsername(username, db);
 
-  if (user_data.length === 0) {
+  if (user.length === 0) {
     throw new Error("Username not available");
   }
 
   // salt and hash the password and compare with password_hash associated with the username in db
 
   // first get the salt from db
-  user_data = user_data[0];
+  let user_data = user[0];
 
   let salt = user_data.salt;
 
@@ -109,7 +109,7 @@ const login = async (username, password, db) => {
     // if valid:
     // generate sessionid and store in db
     // return sessionid as response to client
-    let user_id = user_data[0].uid;
+    let user_id = user_data.uid;
     let session_id = await createSessionId(user_id, db);
 
     return [session_id, username];
@@ -221,7 +221,7 @@ const getTodo = async (username, session_id, tid, db) => {
   }
 }
 
-const editTodo = async (username, session_id, todo, db) => {
+const editTodo = async (username, session_id, todo_data, db) => {
   username = username.trim();
 
   if (!isValidUsername(username)) {
@@ -232,16 +232,17 @@ const editTodo = async (username, session_id, todo, db) => {
     throw new Error("Invalid Session");
   }
   
-  let todo = await getTodo(username, session_id, todo.tid, db);
+  let todo = await getTodo(username, session_id, todo_data.tid, db);
 
-  if (user.length === 0) {
+  if (todo.length === 0) {
     throw new Error("Todo does not exist");
   }
 
   let user_id = user_data[0].uid;
+  let todo_item = todo[0];
 
   try {
-    const [rows, fields] = await db.execute(`INSERT INTO todos (uid, priority, description, completed) VALUES (${user_id}, ${todo.priority}, ${todo.description}, ${todo.completed})`);
+    const [rows, fields] = await db.execute(`INSERT INTO todos (uid, priority, description, completed) VALUES (${user_id}, ${todo_item.priority}, ${todo_item.description}, ${todo_item.completed})`);
 
     return rows;
 

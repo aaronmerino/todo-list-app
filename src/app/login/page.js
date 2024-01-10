@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useRouter } from 'next/navigation'
@@ -14,25 +15,24 @@ export default function Page() {
     const form = e.target;
     const formData = new FormData(form);
 
-    fetch('/api/register', { method: form.method, body: formData })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not OK");
-        }
-        
-        return response.json();
-      }).then(data => {
-        console.log(data);
-        if (data.message === "invalid") {
-          throw new Error("Invalid username or password!");
-        } else {
-          router.push('/login');
-        }
-      })
-      .catch((err) => {
-        setValid(false);
-
-      });
+    fetch('/api/login', { method: form.method, body: formData })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not OK yo!");
+      }
+      
+      return response.json();
+    }).then(data => {
+      console.log(data);
+      if (data.message === "invalid") {
+        throw new Error("Invalid credentials!");
+      } else {
+        router.push('/');
+      }
+    })
+    .catch((err) => {
+      setValid(false);
+    });  
   }
 
   return (
@@ -46,7 +46,8 @@ export default function Page() {
         password: <input name="password" />
       </label>
 
-      <button type="submit">Register</button>
+      <button type="submit">Login</button>
     </form>
   );
+
 }

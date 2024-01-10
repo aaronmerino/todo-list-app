@@ -5,32 +5,51 @@ import { useState } from 'react';
 export function Todo({ tid, uid, date_created, priority, description, completed = false }) {
 
   const [editing, setEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [priorityValue, setPriorityValue] = useState(priority);
   const [descriptionValue, setDescriptionValue] = useState(description);
   const [completedValue, setCompletedValue] = useState(completed);
 
 
   function handleSubmit(e) {
-
     // if done editing, request API to save results to database
     // show errors if there were errors in saving
 
     e.preventDefault();
 
+    setIsLoading(true);
+
     // Read the form data
-    const form = e.target;
-    const formData = new FormData(form);
+    const data_obj = {
+      tid: tid,
+      uid: uid, //we want uid so we can check user_sessions is valid in server
+      priority: priorityValue,
+      description: descriptionValue,
+      completed: completedValue
+    };
 
-    // You can pass formData as a fetch body directly:
-    fetch('/some-api', { method: form.method, body: formData });
+    const data_str = JOSN.stringify(data_obj);
 
-    // if fetch has no errors, setEditing(!editing);
-    // if there are errors, say there was an error saving but dont setEditing
+
+    fetch('/some-api', { method: form.method, body: data_str })
+      .then( (res) => {
+        // if fetch has no errors, setEditing(!editing); 
+        return res.json();
+      })
+      .then( (data) => {
+
+        setIsLoading(false);
+        setEditing(false);
+      })
+      .catch( (err) => {
+        // if there are errors, say there was an error saving but dont setEditing
+
+      });
 
   }
 
   function handleOnEdit() {
-    setEditing(!editing);
+    setEditing(true);
   }
 
   function handleInputPriorityChange(e) {
@@ -75,7 +94,7 @@ export function Todo({ tid, uid, date_created, priority, description, completed 
 
         <hr />
 
-        <button onClick={handleSubmit}>submit</button>
+        <button onClick={handleSubmit}>{isLoading ? 'loading...' : 'submit'}</button>
       </form>
     );
 

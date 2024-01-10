@@ -21,9 +21,7 @@ export async function POST(request) {
     return Response.json({ res: res, message: 'valid' });
   } catch (error) {
     console.log(error);
-    return Response.json({ res: error.message, message: 'invalid' });
+    return Response.json({ message: 'invalid' }, {status: 400, statusText: error.message});
   }
-
-
 
 }
