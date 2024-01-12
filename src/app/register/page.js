@@ -21,17 +21,11 @@ export default function Page() {
         }
         
         return response.json();
-      }).then(data => {
-        console.log(data);
-        if (data.message === "invalid") {
-          throw new Error("Invalid username or password!");
-        } else {
-          router.push('/login');
-        }
+      }).then(() => {
+        router.push('/login');
       })
-      .catch((err) => {
+      .catch(() => {
         setValid(false);
-
       });
   }
 
@@ -43,7 +37,7 @@ export default function Page() {
       </label>
       <hr />
       <label>
-        password: <input name="password" />
+        password: <input type="password" name="password" />
       </label>
 
       <button type="submit">Register</button>

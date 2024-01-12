@@ -19,17 +19,17 @@ export async function POST(request) {
   try {
     let res = await accounts.login(username, password, db);
     const headers_cookies = [
-      ["Set-Cookie", `session_id=${res[0]}; SameSite=Strict`],
-      ["Set-Cookie", `username=${res[1]}; SameSite=Strict`],
+      ["Set-Cookie", `session_id=${res.session_id}; SameSite=Strict; Secure; HttpOnly`],
+      ["Set-Cookie", `username=${res.username}; SameSite=Strict; Secure; HttpOnly`],
     ];
 
     const headers = new Headers(headers_cookies);
     
 
-    return Response.json({ message: 'valid' }, { headers: headers });
+    return Response.json(null, { headers: headers });
   } catch (error) {
     console.log(error);
-    return Response.json({ message: 'invalid' }, {status: 403, statusText: error.message});
+    return Response.json(null, {status: 403, statusText: error.message});
   }
 
 }

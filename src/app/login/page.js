@@ -22,15 +22,10 @@ export default function Page() {
       }
       
       return response.json();
-    }).then(data => {
-      console.log(data);
-      if (data.message === "invalid") {
-        throw new Error("Invalid credentials!");
-      } else {
-        router.push('/');
-      }
+    }).then(() => {
+      router.push('/');
     })
-    .catch((err) => {
+    .catch(() => {
       setValid(false);
     });  
   }
@@ -43,7 +38,7 @@ export default function Page() {
       </label>
       <hr />
       <label>
-        password: <input name="password" />
+        password: <input type="password" name="password" />
       </label>
 
       <button type="submit">Login</button>

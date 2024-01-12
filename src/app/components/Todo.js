@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export function Todo({ tid, uid, date_created, priority, description, completed = false }) {
+export function Todo({ tid, parentid, date_created, priority, description, completed = false, todos, handleAddTodo }) {
 
   const [editing, setEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -10,8 +10,45 @@ export function Todo({ tid, uid, date_created, priority, description, completed 
   const [descriptionValue, setDescriptionValue] = useState(description);
   const [completedValue, setCompletedValue] = useState(completed);
 
+  function handleOnAddSubTodo(e) {
+    e.preventDefault();
 
-  function handleSubmit(e) {
+    // Read the form data
+    const data = {
+      parentid: tid,
+      priority: 1,
+      description: '',
+      completed: 0
+    };
+
+    // make request to insert blank todo
+    fetch('/api/users/todos', { 
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),       
+    })
+      .then( (res) => {
+        // if fetch has no errors, setEditing(!editing); 
+        return res.json();
+      })
+      .then( (data) => {
+        const addedTid = data.res.insertId;
+        handleAddTodo(addedTid);
+      })
+      .catch( (err) => {
+        // if there are errors, say there was an error saving but dont setEditing
+        console.error(err);
+      });    
+  }
+
+  function handleOnShowSubTodos(e) {
+
+  }
+
+
+  function handleEditSubmit(e) {
     // if done editing, request API to save results to database
     // show errors if there were errors in saving
 
@@ -22,7 +59,6 @@ export function Todo({ tid, uid, date_created, priority, description, completed 
     // Read the form data
     const data_obj = {
       tid: tid,
-      uid: uid, //we want uid so we can check user_sessions is valid in server
       priority: priorityValue,
       description: descriptionValue,
       completed: completedValue
@@ -31,9 +67,8 @@ export function Todo({ tid, uid, date_created, priority, description, completed 
     const data_str = JOSN.stringify(data_obj);
 
 
-    fetch('/some-api', { method: form.method, body: data_str })
+    fetch('/some-api', { method: 'PUT', body: data_str })
       .then( (res) => {
-        // if fetch has no errors, setEditing(!editing); 
         return res.json();
       })
       .then( (data) => {
@@ -43,7 +78,7 @@ export function Todo({ tid, uid, date_created, priority, description, completed 
       })
       .catch( (err) => {
         // if there are errors, say there was an error saving but dont setEditing
-
+        console.error(err);
       });
 
   }
@@ -64,9 +99,13 @@ export function Todo({ tid, uid, date_created, priority, description, completed 
     setDescriptionValue(e.target.value);
   }
 
+  // find all sub todos of this todo
+
+
+
   if (editing) {
     return (
-      <form method="post" onSubmit={handleSubmit}>
+      <form method="post" onSubmit={handleEditSubmit}>
         <h1>
           <label>
             <b>priority</b> 
@@ -112,6 +151,16 @@ export function Todo({ tid, uid, date_created, priority, description, completed 
 
         <hr />
         <button onClick={handleOnEdit}>edit</button>
+        <button onClick={handleOnAddSubTodo}>add sub-todo</button>
+        <button onClick={handleOnShowSubTodos}>show sub-todo</button>
+
+        <div>
+          {todos.map((data, index) => {
+                              if (data.parentid === tid) {
+                                return data;
+                              }
+                            })}
+        </div>
       </div>
     );
 

@@ -44,14 +44,14 @@ const createAccount = async (username, password, db) => {
     throw new Error("Invalid Password");
   }
 
-  let user = await getUserFromUsername(username, db);
+  const user = await getUserFromUsername(username, db);
 
   if (user.length !== 0) {
     throw new Error("Username not available");
   }
 
-  let salt = generateRandStr(16);
-  let password_hash = hashPassword(password, salt);
+  const salt = generateRandStr(16);
+  const password_hash = hashPassword(password, salt);
 
   try {
     await db.execute(`INSERT INTO users (username, password_hash, salt) VALUES ('${username}', '${password_hash}', '${salt}')`);
@@ -63,7 +63,7 @@ const createAccount = async (username, password, db) => {
 }
 
 const createSessionId = async (user_id, db) => {
-  let session_id = generateRandStr(32);
+  const session_id = generateRandStr(32);
 
   try {
     await db.execute(`REPLACE INTO user_sessions (sid, uid) VALUES ('${session_id}', '${user_id}')`);
@@ -86,7 +86,7 @@ const login = async (username, password, db) => {
     throw new Error("Invalid Password");
   }
 
-  let user = await getUserFromUsername(username, db);
+  const user = await getUserFromUsername(username, db);
 
   if (user.length === 0) {
     throw new Error("Username not available");
@@ -95,13 +95,13 @@ const login = async (username, password, db) => {
   // salt and hash the password and compare with password_hash associated with the username in db
 
   // first get the salt from db
-  let user_data = user[0];
+  const user_data = user[0];
 
-  let salt = user_data.salt;
+  const salt = user_data.salt;
 
   // second hash the password with salt
 
-  let password_hash = hashPassword(password, salt);
+  const password_hash = hashPassword(password, salt);
 
   // third compare with password_hash associated with username
 
@@ -109,10 +109,10 @@ const login = async (username, password, db) => {
     // if valid:
     // generate sessionid and store in db
     // return sessionid as response to client
-    let user_id = user_data.uid;
-    let session_id = await createSessionId(user_id, db);
+    const user_id = user_data.uid;
+    const session_id = await createSessionId(user_id, db);
 
-    return [session_id, username];
+    return { session_id: session_id, username: username };
 
   } else {
     // if not valid:
@@ -129,13 +129,13 @@ const isValidSessionId = async (session_id, username, db) => {
   }
 
   // select datediff(current_timestamp, date('2024-01-01 23:59:59')) = 2;
-  let user_data = await getUserFromUsername(username, db);
+  const user_data = await getUserFromUsername(username, db);
 
   if (user_data.length === 0) {
     throw new Error("Invalid Username");
   }
 
-  let user_id = user_data[0].uid;
+  const user_id = user_data[0].uid;
 
   try {
     // Check if session id exists with username and check if session id is at most 2 days
@@ -153,7 +153,7 @@ const isValidSessionId = async (session_id, username, db) => {
 
 }
 
-const getUsersTodos = async (username, session_id, db) => {
+const getTodos = async (username, session_id, db) => {
   username = username.trim();
 
   if (!isValidUsername(username)) {
@@ -164,10 +164,46 @@ const getUsersTodos = async (username, session_id, db) => {
     throw new Error("Invalid Session");
   }
 
-  let user_id = user_data[0].uid;
+  const user_data = await getUserFromUsername(username, db);
+
+  if (user_data.length === 0) {
+    throw new Error("Username not available");
+  }
+
+  const user_id = user_data[0].uid;
 
   try {
-    const [rows, fields] = await db.execute(`SELECT tid, date_created, priority, description, completed FROM todos t WHERE t.uid = '${user_id}'`);
+    const [rows, _] = await db.execute(`SELECT tid, parentid, date_created, priority, description, completed FROM todos t WHERE t.uid = '${user_id}'`);
+
+    return rows;
+
+  } catch (error) {
+    throw new Error(error);
+  }  
+}
+
+// note: we can get root todos by having parentid = null
+const getSubTodos = async (username, session_id, parentid, db) => {
+  username = username.trim();
+
+  if (!isValidUsername(username)) {
+    throw new Error("Invalid Username");
+  }
+
+  if (!isValidSessionId(session_id, username, db)) {
+    throw new Error("Invalid Session");
+  }
+
+  const user_data = await getUserFromUsername(username, db);
+
+  if (user_data.length === 0) {
+    throw new Error("Username not available");
+  }
+
+  const user_id = user_data[0].uid;
+
+  try {
+    const [rows, fields] = await db.execute(`SELECT tid, parentid, date_created, priority, description, completed FROM todos t WHERE t.uid = '${user_id}' AND t.parentid = '${parentid}'`);
 
     return rows;
 
@@ -187,16 +223,39 @@ const insertTodo = async (username, session_id, todo, db) => {
     throw new Error("Invalid Session");
   }
 
-  let user_id = user_data[0].uid;
+  const user_data = await getUserFromUsername(username, db);
 
-  try {
-    const [rows, fields] = await db.execute(`INSERT INTO todos (uid, priority, description, completed) VALUES (${user_id}, ${todo.priority}, ${todo.description}, ${todo.completed})`);
+  if (user_data.length === 0) {
+    throw new Error("Username not available");
+  }
 
-    return rows;
+  const user_id = user_data[0].uid;
+  console.log(todo.parentid);
 
-  } catch (error) {
-    throw new Error(error);
-  }  
+  if (todo.parentid !== null) {
+    console.log('sdfdf')
+    try {
+      const [res, _] = await db.execute(`INSERT INTO todos (uid, parentid, priority, description) VALUES ('${user_id}', '${todo.parentid}', '${todo.priority}', '${todo.description}')`);
+  
+      return res;
+  
+    } catch (error) {
+      
+      throw new Error(error);
+    }  
+  } else {
+    console.log('sdfdf34324534543')
+    try {
+      const [res, _] = await db.execute(`INSERT INTO todos (uid, priority, description) VALUES ('${user_id}', '${todo.priority}', '${todo.description}')`);
+  
+      return res;
+  
+    } catch (error) {
+      
+      throw new Error(error);
+    }      
+  }
+
 
 }
 
@@ -210,18 +269,24 @@ const getTodo = async (username, session_id, tid, db) => {
   if (!isValidSessionId(session_id, username, db)) {
     throw new Error("Invalid Session");
   }
-    
+
+  const user_data = await getUserFromUsername(username, db);
+
+  if (user_data.length === 0) {
+    throw new Error("Username not available");
+  }
+
   try {
-    const [rows, fields] = await db.execute(`SELECT * FROM todos t WHERE t.tid = '${tid}'`);
-    
+    const [rows, _] = await db.execute(`SELECT tid, parentid, date_created, priority, description, completed FROM todos t WHERE t.tid = '${tid}' `);
+
     return rows;
 
   } catch (error) {
     throw new Error(error);
-  }
+  }  
 }
 
-const editTodo = async (username, session_id, todo_data, db) => {
+const editTodo = async (username, session_id, todo, db) => {
   username = username.trim();
 
   if (!isValidUsername(username)) {
@@ -232,19 +297,18 @@ const editTodo = async (username, session_id, todo_data, db) => {
     throw new Error("Invalid Session");
   }
   
-  let todo = await getTodo(username, session_id, todo_data.tid, db);
+  const todo_list = await getTodo(username, session_id, todo.tid, db);
 
-  if (todo.length === 0) {
+  if (todo_list.length === 0) {
     throw new Error("Todo does not exist");
   }
 
-  let user_id = user_data[0].uid;
-  let todo_item = todo[0];
+  const tid = todo.tid;
 
   try {
-    const [rows, fields] = await db.execute(`INSERT INTO todos (uid, priority, description, completed) VALUES (${user_id}, ${todo_item.priority}, ${todo_item.description}, ${todo_item.completed})`);
+    const res = await db.execute(`UPDATE todos t SET t.priority = '${todo.priority}', t.description = '${todo.description}', t.completed = ${todo.completed} WHERE t.tid = ${todo.tid}`);
 
-    return rows;
+    return res;
 
   } catch (error) {
     throw new Error(error);
@@ -261,7 +325,8 @@ module.exports = {
   createSessionId,
   login,
   isValidSessionId,
-  getUsersTodos,
+  getTodos,
+  getSubTodos,
   insertTodo,
   getTodo,
   editTodo
