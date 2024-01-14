@@ -306,7 +306,7 @@ const editTodo = async (username, session_id, todo, db) => {
   const tid = todo.tid;
 
   try {
-    const res = await db.execute(`UPDATE todos t SET t.priority = '${todo.priority}', t.description = '${todo.description}', t.completed = ${todo.completed} WHERE t.tid = ${todo.tid}`);
+    const res = await db.execute(`UPDATE todos t SET t.priority = '${todo.priority}', t.description = '${todo.description}', t.completed = '${todo.completed ? 1 : 0}' WHERE t.tid = ${todo.tid}`);
 
     return res;
 

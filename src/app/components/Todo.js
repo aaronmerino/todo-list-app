@@ -2,13 +2,18 @@
 
 import { useEffect, useState } from 'react';
 
+import styles from './styles.module.css'
+
 export function Todo({ tid, parentid, date_created, priority, description, completed = false, todos, handleAddTodo }) {
 
   const [editing, setEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSubTodos, setShowSubTodos] = useState(true);
   const [priorityValue, setPriorityValue] = useState(priority);
   const [descriptionValue, setDescriptionValue] = useState(description);
   const [completedValue, setCompletedValue] = useState(completed);
+  
+  const subTodos = todos.filter((todo) => todo.parentid === tid);
 
   function handleOnAddSubTodo(e) {
     e.preventDefault();
@@ -44,7 +49,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
   }
 
   function handleOnShowSubTodos(e) {
-
+    setShowSubTodos(!showSubTodos);
   }
 
 
@@ -64,10 +69,10 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
       completed: completedValue
     };
 
-    const data_str = JOSN.stringify(data_obj);
+    const data_str = JSON.stringify(data_obj);
 
 
-    fetch('/some-api', { method: 'PUT', body: data_str })
+    fetch('/api/users/todos', { method: 'PUT', body: data_str })
       .then( (res) => {
         return res.json();
       })
@@ -105,62 +110,80 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
   if (editing) {
     return (
-      <form method="post" onSubmit={handleEditSubmit}>
-        <h1>
-          <label>
-            <b>priority</b> 
-            <input name='priority' type="text" value={priorityValue} onChange={handleInputPriorityChange} />   
-          </label>
-        </h1>
+      <div className={parentid !== null ? styles.subtodo : styles.todo}>
+        <form method="post" onSubmit={handleEditSubmit}>
+          <div>
+            <label>
+              priority:
+              <input name='priority' type="text" value={priorityValue} onChange={handleInputPriorityChange} />   
+            </label>
+          </div>
 
-        <h2> <b>created</b> {date_created} </h2>
+          <div>
+            <label>
+              completed:
+              <input name='completed' type="checkbox" checked={completedValue} onChange={handleInputCompletedChange}/>
+            </label>
+          </div>
 
-        <h2> 
-          <label>
-            <b>completed</b> 
+          
+          <hr />
 
-            <input name='completed' type="checkbox" checked={completedValue} onChange={handleInputCompletedChange}/>
-          </label>
-        </h2>
+          <div>
+            <label>
+              description:
 
-        <hr />
+              <input name='description' type="text" value={descriptionValue} onChange={handleInputDescriptionChange}/>
+            </label>
+          </div>
 
-        <label>
-          <b>description</b>
+          <hr />
 
-          <input name='description' type="text" value={descriptionValue} onChange={handleInputDescriptionChange}/>
-        </label>
-
-        <hr />
-
-        <button onClick={handleSubmit}>{isLoading ? 'loading...' : 'submit'}</button>
-      </form>
+          <button onClick={handleOnEdit}>{isLoading ? 'loading...' : 'submit'}</button>
+        </form>
+      </div>
+      
     );
 
   } else {
 
     return (
-      <div className="todo">
-        <h1> <b>priority</b> {priorityValue} </h1>
-        <h2> <b>created</b> {date_created}</h2>
-        <h2> <b>completed</b> {completedValue.toString()}</h2>
+      <div className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
+        <div>
+          priority: {priorityValue}
+        </div>
+        
+        <div>
+          created: {(new Date(date_created)).toLocaleString()}
+        </div>
+        
+        <div>
+          completed: {completedValue.toString()}
+        </div>
+        
   
         <hr />
   
         <p> {descriptionValue} </p>
 
         <hr />
-        <button onClick={handleOnEdit}>edit</button>
-        <button onClick={handleOnAddSubTodo}>add sub-todo</button>
-        <button onClick={handleOnShowSubTodos}>show sub-todo</button>
 
         <div>
-          {todos.map((data, index) => {
-                              if (data.parentid === tid) {
-                                return data;
-                              }
-                            })}
+          <button onClick={handleOnEdit}>edit</button>
+          <button onClick={handleOnAddSubTodo}>add sub-todo</button>
+          <button onClick={handleOnShowSubTodos}>{subTodos.length !== 0 ? 'show sub-todos' : 'blank'}</button>
         </div>
+
+        <hr />
+
+        {showSubTodos && (
+          <div>
+          {subTodos.map((todo) => {
+              return <Todo key={todo.tid} tid={todo.tid} parentid={tid} date_created={todo.date_created} priority={todo.priority} description={todo.description} completed={todo.completed} todos={todos} handleAddTodo={handleAddTodo} />
+            })}
+        </div>
+        )}
+
       </div>
     );
 
