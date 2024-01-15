@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import styles from './styles.module.css'
 
-export function Todo({ tid, parentid, date_created, priority, description, completed = false, todos, handleAddTodo }) {
+export function Todo({ tid, parentid, date_created, priority, description, completed = false, handleDelete, todos }) {
 
   const [editing, setEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -13,12 +13,12 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
   const [descriptionValue, setDescriptionValue] = useState(description);
   const [completedValue, setCompletedValue] = useState(completed);
   
-  const subTodos = todos.filter((todo) => todo.parentid === tid);
+  const [subTodos, setSubTodos] = useState(todos.filter((t) => t.parentid === tid));
+
 
   function handleOnAddSubTodo(e) {
     e.preventDefault();
 
-    // Read the form data
     const data = {
       parentid: tid,
       priority: 1,
@@ -34,19 +34,54 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
       },
       body: JSON.stringify(data),       
     })
+    .then( (res) => {
+      // if fetch has no errors, setEditing(!editing); 
+      return res.json();
+    })
+    .then( (data) => {
+      const addedTid = data.res.insertId;
+
+      fetch(`/api/users/todos/${addedTid}`, { 
+        method: 'GET'      
+      })
       .then( (res) => {
-        // if fetch has no errors, setEditing(!editing); 
         return res.json();
       })
       .then( (data) => {
-        const addedTid = data.res.insertId;
-        handleAddTodo(addedTid);
+        setSubTodos([...subTodos, data.res[0]]);
       })
       .catch( (err) => {
-        // if there are errors, say there was an error saving but dont setEditing
+        console.error(err);
+      });  
+
+    })
+    .catch( (err) => {
+      // if there are errors, say there was an error saving but dont setEditing
+      console.error(err);
+    });    
+  }
+
+  function handleOnDeleteSubTodo(e, tid) {
+    e.preventDefault();
+
+    const data_obj = {
+      tid: tid,
+    };
+
+    const data_str = JSON.stringify(data_obj);
+
+    fetch(`/api/users/todos/${tid}`, { method: 'DELETE', body: data_str })
+      .then( (res) => {
+        return res.json();
+      })
+      .then( (data) => {
+        setSubTodos(subTodos.filter((t) => t.tid !== tid));
+      })
+      .catch( (err) => {
         console.error(err);
       });    
   }
+
 
   function handleOnShowSubTodos(e) {
     setShowSubTodos(!showSubTodos);
@@ -169,9 +204,11 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
         <hr />
 
         <div>
+          <button onClick={(e) => handleDelete(e, tid)}>delete</button>
           <button onClick={handleOnEdit}>edit</button>
           <button onClick={handleOnAddSubTodo}>add sub-todo</button>
           <button onClick={handleOnShowSubTodos}>{subTodos.length !== 0 ? 'show sub-todos' : 'blank'}</button>
+          
         </div>
 
         <hr />
@@ -179,7 +216,16 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
         {showSubTodos && (
           <div>
           {subTodos.map((todo) => {
-              return <Todo key={todo.tid} tid={todo.tid} parentid={tid} date_created={todo.date_created} priority={todo.priority} description={todo.description} completed={todo.completed} todos={todos} handleAddTodo={handleAddTodo} />
+              return <Todo 
+                      key={todo.tid} 
+                      tid={todo.tid} 
+                      parentid={tid} 
+                      date_created={todo.date_created} 
+                      priority={todo.priority} 
+                      description={todo.description} 
+                      completed={todo.completed} 
+                      handleDelete={handleOnDeleteSubTodo} 
+                      todos={todos} />
             })}
         </div>
         )}

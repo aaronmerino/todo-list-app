@@ -286,6 +286,33 @@ const getTodo = async (username, session_id, tid, db) => {
   }  
 }
 
+const deleteTodo = async (username, session_id, tid, db) => {
+  username = username.trim();
+
+  if (!isValidUsername(username)) {
+    throw new Error("Invalid Username");
+  }
+
+  if (!isValidSessionId(session_id, username, db)) {
+    throw new Error("Invalid Session");
+  }
+
+  const user_data = await getUserFromUsername(username, db);
+
+  if (user_data.length === 0) {
+    throw new Error("Username not available");
+  }
+
+  try {
+    const [rows, _] = await db.execute(`DELETE FROM todos t WHERE t.tid = '${tid}' `);
+
+    return rows;
+
+  } catch (error) {
+    throw new Error(error);
+  }  
+}
+
 const editTodo = async (username, session_id, todo, db) => {
   username = username.trim();
 
@@ -329,5 +356,6 @@ module.exports = {
   getSubTodos,
   insertTodo,
   getTodo,
+  deleteTodo,
   editTodo
 };
