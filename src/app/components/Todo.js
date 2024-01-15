@@ -35,7 +35,10 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
       body: JSON.stringify(data),       
     })
     .then( (res) => {
-      // if fetch has no errors, setEditing(!editing); 
+      if (!res.ok) {
+        throw new Error("Network response was not OK yo!");
+      }
+
       return res.json();
     })
     .then( (data) => {
@@ -48,7 +51,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
         return res.json();
       })
       .then( (data) => {
-        setSubTodos([...subTodos, data.res[0]]);
+        setSubTodos([data.res[0], ...subTodos]);
       })
       .catch( (err) => {
         console.error(err);
@@ -72,6 +75,10 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
     fetch(`/api/users/todos/${tid}`, { method: 'DELETE', body: data_str })
       .then( (res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not OK yo!");
+        }
+
         return res.json();
       })
       .then( (data) => {
@@ -81,12 +88,6 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
         console.error(err);
       });    
   }
-
-
-  function handleOnShowSubTodos(e) {
-    setShowSubTodos(!showSubTodos);
-  }
-
 
   function handleEditSubmit(e) {
     // if done editing, request API to save results to database
@@ -109,10 +110,13 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
     fetch('/api/users/todos', { method: 'PUT', body: data_str })
       .then( (res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not OK yo!");
+        }
+
         return res.json();
       })
       .then( (data) => {
-
         setIsLoading(false);
         setEditing(false);
       })
@@ -121,6 +125,10 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
         console.error(err);
       });
 
+  }
+
+  function handleOnShowSubTodos(e) {
+    setShowSubTodos(!showSubTodos);
   }
 
   function handleOnEdit() {
@@ -145,7 +153,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
   if (editing) {
     return (
-      <div className={parentid !== null ? styles.subtodo : styles.todo}>
+      <div className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
         <form method="post" onSubmit={handleEditSubmit}>
           <div>
             <label>
@@ -176,6 +184,23 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
           <button onClick={handleOnEdit}>{isLoading ? 'loading...' : 'submit'}</button>
         </form>
+        {showSubTodos && (
+          <div>
+          {subTodos.map((todo) => {
+              return <Todo 
+                      key={todo.tid} 
+                      tid={todo.tid} 
+                      parentid={tid} 
+                      date_created={todo.date_created} 
+                      priority={todo.priority} 
+                      description={todo.description} 
+                      completed={todo.completed} 
+                      handleDelete={handleOnDeleteSubTodo} 
+                      todos={todos} />
+            })}
+        </div>
+        )}
+        
       </div>
       
     );
@@ -207,7 +232,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           <button onClick={(e) => handleDelete(e, tid)}>delete</button>
           <button onClick={handleOnEdit}>edit</button>
           <button onClick={handleOnAddSubTodo}>add sub-todo</button>
-          <button onClick={handleOnShowSubTodos}>{subTodos.length !== 0 ? 'show sub-todos' : 'blank'}</button>
+          {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>show sub-todos</button>)}
           
         </div>
 

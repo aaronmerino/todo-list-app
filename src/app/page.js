@@ -76,7 +76,7 @@ class TodoNode {
 
     for (let todo of this.children) {
       res.push(todo);
-      res = [...res, todo.getList()]
+      res = [todo.getList(), ...res]
     }
 
     return res;
@@ -164,6 +164,10 @@ export default function Home() {
       method: 'GET'      
     })
     .then( (res) => {
+      if (!res.ok) {
+        throw new Error("Network response was not OK yo!");
+      }
+
       return res.json();
     })
     .then( (data) => {
@@ -197,7 +201,10 @@ export default function Home() {
       body: JSON.stringify(data),       
     })
     .then( (res) => {
-      // if fetch has no errors, setEditing(!editing); 
+      if (!res.ok) {
+        throw new Error("Network response was not OK yo!");
+      }
+
       return res.json();
     })
     .then( (data) => {
@@ -236,6 +243,10 @@ export default function Home() {
 
     fetch(`/api/users/todos/${tid}`, { method: 'DELETE', body: data_str })
       .then( (res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not OK yo!");
+        }
+
         return res.json();
       })
       .then( (data) => {
