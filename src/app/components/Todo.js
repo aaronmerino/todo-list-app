@@ -51,6 +51,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
       })
       .then( (data) => {
         setSubTodos([data.res[0], ...subTodos]);
+        setShowSubTodos(true);
       })
       .catch( (err) => {
         console.error(err);
@@ -149,6 +150,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
   function handleOnEdit() {
     setEditing(true);
+    setShowSubTodos(false);
   }
 
   function handleInputPriorityChange(e) {
@@ -174,9 +176,9 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
             <label>
               priority:
               <select name='priority' value={priorityValue} onChange={handleInputPriorityChange}>
-                <option value="1">low</option>
-                <option value="2">mid</option>
-                <option value="3">high</option>
+                <option value="1">🟢</option>
+                <option value="2">🟡</option>
+                <option value="3">🔴</option>
               </select>
 
             </label>
@@ -201,11 +203,11 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           <hr />
 
           <div>
-            <button type="submit">submit</button>
+            <button type="submit">return</button>
           </div>
           
         </form>
-        <div div className={styles.subtodoscontainer}>
+        {/* <div div className={styles.subtodoscontainer}>
           {showSubTodos && (
             
             subTodos.map((todo) => {
@@ -223,7 +225,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
               })
           
           )}
-        </div>
+        </div> */}
         
       </div>
       
@@ -234,7 +236,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
     return (
       <div className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
         <div>
-          priority: { priorityValue == 3 ? 'high' : ( priorityValue == 2 ? 'mid' : 'low' ) }
+          priority: { priorityValue == 3 ? '🔴' : ( priorityValue == 2 ? '🟡' : '🟢' ) }
         </div>
         
         <div>
@@ -255,8 +257,8 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
         <div>
           <button onClick={(e) => handleDelete(e, tid)}>delete</button>
           <button onClick={handleOnEdit}>edit</button>
-          <button onClick={handleOnAddSubTodo}>add sub-todo</button>
-          {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>show sub-todos</button>)}
+          <button onClick={handleOnAddSubTodo}>+</button>
+          {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? '⯆' : '⯈'}</button>)}
           
         </div>
 
