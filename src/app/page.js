@@ -3,6 +3,7 @@
 import styles from './page.module.css'
 import { Todo } from './components/Todo';
 import { useEffect, useState, useReducer } from 'react';
+import { useRouter } from 'next/navigation'
 
 /*
   <tid, parentid>
@@ -156,8 +157,7 @@ export default function Home() {
 
   const [todos, setTodos] = useState([]);
   const [rootTodos, setRootTodos] = useState([]);
-  console.log('rootTodos:');
-  console.log(rootTodos);
+  const router = useRouter();
 
   useEffect(() => {
     fetch('/api/users/todos', { 
@@ -165,19 +165,21 @@ export default function Home() {
     })
     .then( (res) => {
       if (!res.ok) {
-        throw new Error("Network response was not OK yo!");
+        throw new Error(`${res.statusText}`);
       }
 
       return res.json();
     })
     .then( (data) => {
-      // console.log(data.res);
-      // generateSuperRootTodoTree(data.res);
       setTodos(data.res);
-
       setRootTodos(data.res.filter((t) => t.parentid === null));
     })
     .catch( (err) => {
+
+      if (err.message === 'expired session') {
+        router.push('/login');
+      }
+      
       console.error(err);
     });   
   }, []);
@@ -202,7 +204,7 @@ export default function Home() {
     })
     .then( (res) => {
       if (!res.ok) {
-        throw new Error("Network response was not OK yo!");
+        throw new Error(`${res.statusText}`);
       }
 
       return res.json();
@@ -217,7 +219,7 @@ export default function Home() {
         return res.json();
       })
       .then( (data) => {
-        setRootTodos([...rootTodos, data.res[0]]);
+        setRootTodos([data.res[0], ...rootTodos]);
       })
       .catch( (err) => {
         console.error(err);
@@ -225,7 +227,9 @@ export default function Home() {
 
     })
     .catch( (err) => {
-      // if there are errors, say there was an error saving but dont setEditing
+      if (err.message === 'expired session') {
+        router.push('/login');
+      }
       console.error(err);
     });      
     
@@ -244,7 +248,7 @@ export default function Home() {
     fetch(`/api/users/todos/${tid}`, { method: 'DELETE', body: data_str })
       .then( (res) => {
         if (!res.ok) {
-          throw new Error("Network response was not OK yo!");
+          throw new Error(`${res.statusText}`);
         }
 
         return res.json();
@@ -253,6 +257,10 @@ export default function Home() {
         setRootTodos(rootTodos.filter((t) => t.tid !== tid));
       })
       .catch( (err) => {
+        if (err.message === 'expired session') {
+          router.push('/login');
+        }
+
         console.error(err);
       });   
   }

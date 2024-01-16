@@ -18,9 +18,13 @@ export async function POST(request) {
   
   try {
     let res = await accounts.createAccount(username, password, db);
+    await db.end();
+
     return Response.json({ res: res });
   } catch (error) {
     console.log(error);
+    await db.end();
+    
     return Response.json(null, {status: 400, statusText: error.message});
   }
 

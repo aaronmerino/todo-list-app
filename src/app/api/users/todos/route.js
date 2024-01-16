@@ -3,6 +3,10 @@ const accounts = require('../../accounts');
 
 //GET ALL TODOS
 export async function GET(request) {
+  if (!request.cookies.has('session_id')) {
+    return Response.json(null, {status: 400, statusText: `expired session`});
+  }
+
   const session_id = request.cookies.get('session_id').value;
   const username = request.cookies.get('username').value;
   const db = await mysql.createConnection({
@@ -14,15 +18,23 @@ export async function GET(request) {
 
   try {
     const res = await accounts.getTodos(username, session_id, db);
+    await db.end();
+
     return Response.json({ res: res });
   } catch (error) {
     console.log(error);
+    await db.end();
+    
     return Response.json(null, {status: 400, statusText: error.message});
   }  
 }
 
 // INSERT A TODO
 export async function POST(request) {
+  if (!request.cookies.has('session_id')) {
+    return Response.json(null, {status: 400, statusText: `expired session`});
+  }
+
   const session_id = request.cookies.get('session_id').value;
   const username = request.cookies.get('username').value;
   const db = await mysql.createConnection({
@@ -41,15 +53,21 @@ export async function POST(request) {
 
   try {
     const res = await accounts.insertTodo(username, session_id, todo, db);
+    await db.end();
     return Response.json({ res: res, message: 'valid' });
   } catch (error) {
     console.log(error);
+    await db.end();
     return Response.json({ message: 'invalid' }, {status: 400, statusText: error.message});
   }  
 }
 
 // EDIT A TODO
 export async function PUT(request) {
+  if (!request.cookies.has('session_id')) {
+    return Response.json(null, {status: 400, statusText: `expired session`});
+  }
+
   const session_id = request.cookies.get('session_id').value;
   const username = request.cookies.get('username').value;
   const db = await mysql.createConnection({
@@ -69,9 +87,15 @@ export async function PUT(request) {
 
   try {
     const res = await accounts.editTodo(username, session_id, todo, db);
+    
+    await db.end();
+
     return Response.json({ res: res, message: 'valid' });
   } catch (error) {
     console.log(error);
+
+    await db.end();
+    
     return Response.json({ message: 'invalid' }, {status: 400, statusText: error.message});
   }  
 }

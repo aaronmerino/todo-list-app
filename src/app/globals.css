@@ -43,8 +43,8 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-start-rgb: 15, 15, 15;
+    --background-end-rgb: 20, 20, 20;
 
     --primary-glow: radial-gradient(rgba(1, 65, 255, 0.4), rgba(1, 65, 255, 0));
     --secondary-glow: linear-gradient(
@@ -87,12 +87,16 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: #F8F9FA;
+}
+
+button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
 }
 
 a {

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react';
+import styles from './styles.module.css'
 
 export default function Page() {
   const router = useRouter()
@@ -30,17 +31,20 @@ export default function Page() {
   }
 
   return (
-    <form method="post" onSubmit={handleSubmit}>
-      {!valid && <div>invalid username or password</div>}
-      <label>
-        username: <input name="username" />
-      </label>
-      <hr />
-      <label>
-        password: <input type="password" name="password" />
-      </label>
+    <div className={styles.container}>
+      <form className={styles.register} method="post" onSubmit={handleSubmit}>
+        {!valid && <div>invalid username or password</div>}
+        <label>
+          username: <input name="username" />
+        </label>
+        
+        <label>
+          password: <input type="password" name="password" />
+        </label>
 
-      <button type="submit">Register</button>
-    </form>
+        <button type="submit">Register</button>
+      </form>
+    </div>
+
   );
 }

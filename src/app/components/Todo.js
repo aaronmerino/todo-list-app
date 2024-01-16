@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'
 
 import styles from './styles.module.css'
 
@@ -8,13 +9,13 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
   const [editing, setEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showSubTodos, setShowSubTodos] = useState(true);
+  const [showSubTodos, setShowSubTodos] = useState(false);
   const [priorityValue, setPriorityValue] = useState(priority);
   const [descriptionValue, setDescriptionValue] = useState(description);
   const [completedValue, setCompletedValue] = useState(completed);
   
   const [subTodos, setSubTodos] = useState(todos.filter((t) => t.parentid === tid));
-
+  const router = useRouter();
 
   function handleOnAddSubTodo(e) {
     e.preventDefault();
@@ -36,7 +37,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
     })
     .then( (res) => {
       if (!res.ok) {
-        throw new Error("Network response was not OK yo!");
+        throw new Error(`${res.statusText}`);
       }
 
       return res.json();
@@ -59,7 +60,10 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
     })
     .catch( (err) => {
-      // if there are errors, say there was an error saving but dont setEditing
+      if (err.message === 'expired session') {
+        router.push('/login');
+      }
+
       console.error(err);
     });    
   }
@@ -76,7 +80,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
     fetch(`/api/users/todos/${tid}`, { method: 'DELETE', body: data_str })
       .then( (res) => {
         if (!res.ok) {
-          throw new Error("Network response was not OK yo!");
+          throw new Error(`${res.statusText}`);
         }
 
         return res.json();
@@ -85,6 +89,10 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
         setSubTodos(subTodos.filter((t) => t.tid !== tid));
       })
       .catch( (err) => {
+        if (err.message === 'expired session') {
+          router.push('/login');
+        }
+
         console.error(err);
       });    
   }
@@ -111,7 +119,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
     fetch('/api/users/todos', { method: 'PUT', body: data_str })
       .then( (res) => {
         if (!res.ok) {
-          throw new Error("Network response was not OK yo!");
+          throw new Error(`${res.statusText}`);
         }
 
         return res.json();
@@ -121,7 +129,10 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
         setEditing(false);
       })
       .catch( (err) => {
-        // if there are errors, say there was an error saving but dont setEditing
+        if (err.message === 'expired session') {
+          router.push('/login');
+        }
+
         console.error(err);
       });
 
@@ -158,7 +169,12 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           <div>
             <label>
               priority:
-              <input name='priority' type="text" value={priorityValue} onChange={handleInputPriorityChange} />   
+              <select name='priority' value={priorityValue} onChange={handleInputPriorityChange}>
+                <option value="1">low</option>
+                <option value="2">mid</option>
+                <option value="3">high</option>
+              </select>
+
             </label>
           </div>
 
@@ -176,30 +192,35 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
             <label>
               description:
 
-              <input name='description' type="text" value={descriptionValue} onChange={handleInputDescriptionChange}/>
+              <textarea name='description' type="text" value={descriptionValue} onChange={handleInputDescriptionChange}/>
             </label>
           </div>
 
           <hr />
 
-          <button onClick={handleOnEdit}>{isLoading ? 'loading...' : 'submit'}</button>
-        </form>
-        {showSubTodos && (
           <div>
-          {subTodos.map((todo) => {
-              return <Todo 
-                      key={todo.tid} 
-                      tid={todo.tid} 
-                      parentid={tid} 
-                      date_created={todo.date_created} 
-                      priority={todo.priority} 
-                      description={todo.description} 
-                      completed={todo.completed} 
-                      handleDelete={handleOnDeleteSubTodo} 
-                      todos={todos} />
-            })}
+            <button onClick={handleOnEdit}>{isLoading ? 'loading...' : 'submit'}</button>
+          </div>
+          
+        </form>
+        <div div className={styles.subtodoscontainer}>
+          {showSubTodos && (
+            
+            subTodos.map((todo) => {
+                return <Todo 
+                        key={todo.tid} 
+                        tid={todo.tid} 
+                        parentid={tid} 
+                        date_created={todo.date_created} 
+                        priority={todo.priority} 
+                        description={todo.description} 
+                        completed={todo.completed} 
+                        handleDelete={handleOnDeleteSubTodo} 
+                        todos={todos} />
+              })
+          
+          )}
         </div>
-        )}
         
       </div>
       
@@ -218,13 +239,13 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
         </div>
         
         <div>
-          completed: {completedValue.toString()}
+          completed: {completedValue ? "✅" : "❌"}
         </div>
         
   
         <hr />
   
-        <p> {descriptionValue} </p>
+        <textarea name='description' type="text" value={descriptionValue} readOnly/>
 
         <hr />
 
@@ -237,24 +258,22 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
         </div>
 
         <hr />
-
-        {showSubTodos && (
-          <div>
-          {subTodos.map((todo) => {
-              return <Todo 
-                      key={todo.tid} 
-                      tid={todo.tid} 
-                      parentid={tid} 
-                      date_created={todo.date_created} 
-                      priority={todo.priority} 
-                      description={todo.description} 
-                      completed={todo.completed} 
-                      handleDelete={handleOnDeleteSubTodo} 
-                      todos={todos} />
-            })}
-        </div>
-        )}
-
+        <div className={styles.subtodoscontainer}>
+          {showSubTodos && (
+            subTodos.map((todo) => {
+                return <Todo 
+                        key={todo.tid} 
+                        tid={todo.tid} 
+                        parentid={tid} 
+                        date_created={todo.date_created} 
+                        priority={todo.priority} 
+                        description={todo.description} 
+                        completed={todo.completed} 
+                        handleDelete={handleOnDeleteSubTodo} 
+                        todos={todos} />
+              })
+          )}
+        </div>      
       </div>
     );
 
