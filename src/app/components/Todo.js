@@ -5,15 +5,13 @@ import { useRouter } from 'next/navigation'
 
 import styles from './styles.module.css'
 
-export function Todo({ tid, parentid, date_created, priority, description, completed = false, handleDelete, todos }) {
+export function Todo({ tid, parentid, date_created, priority, description, completed = false, handleDelete, handleSubmit, todos }) {
 
   const [editing, setEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [showSubTodos, setShowSubTodos] = useState(false);
   const [priorityValue, setPriorityValue] = useState(priority);
   const [descriptionValue, setDescriptionValue] = useState(description);
   const [completedValue, setCompletedValue] = useState(completed);
-  
   const [subTodos, setSubTodos] = useState(todos.filter((t) => t.parentid === tid));
   const router = useRouter();
 
@@ -68,16 +66,16 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
     });    
   }
 
-  function handleOnDeleteSubTodo(e, tid) {
+  function handleOnDeleteSubTodo(e, subtid) {
     e.preventDefault();
 
     const data_obj = {
-      tid: tid,
+      tid: subtid,
     };
 
     const data_str = JSON.stringify(data_obj);
 
-    fetch(`/api/users/todos/${tid}`, { method: 'DELETE', body: data_str })
+    fetch(`/api/users/todos/${subtid}`, { method: 'DELETE', body: data_str })
       .then( (res) => {
         if (!res.ok) {
           throw new Error(`${res.statusText}`);
@@ -85,8 +83,8 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
         return res.json();
       })
-      .then( (data) => {
-        setSubTodos(subTodos.filter((t) => t.tid !== tid));
+      .then( () => {
+        setSubTodos(subTodos.filter((t) => t.tid !== subtid));
       })
       .catch( (err) => {
         if (err.message === 'expired session') {
@@ -97,24 +95,17 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
       });    
   }
 
-  function handleEditSubmit(e) {
-    // if done editing, request API to save results to database
-    // show errors if there were errors in saving
-
+  function handleEditSubmit(e, subtid) {
     e.preventDefault();
 
-    setIsLoading(true);
-
-    // Read the form data
     const data_obj = {
-      tid: tid,
-      priority: priorityValue,
-      description: descriptionValue,
-      completed: completedValue
+      tid: subtid,
+      priority: e.target.priority.value,
+      description: e.target.description.value,
+      completed: e.target.completed.checked
     };
 
     const data_str = JSON.stringify(data_obj);
-
 
     fetch('/api/users/todos', { method: 'PUT', body: data_str })
       .then( (res) => {
@@ -124,9 +115,23 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
         return res.json();
       })
-      .then( (data) => {
-        setIsLoading(false);
-        setEditing(false);
+      .then( () => {
+
+        const newSubTodos = subTodos.map((todo) => {
+          if (todo.tid !== subtid) {
+            return todo;
+          } else {
+            return {
+              tid: todo.tid,
+              date_created: todo.date_created,
+              priority: e.target.priority.value,
+              description: e.target.description.value,
+              completed: e.target.completed.checked
+            };
+          }
+        });
+
+        setSubTodos(newSubTodos);
       })
       .catch( (err) => {
         if (err.message === 'expired session') {
@@ -158,14 +163,13 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
     setDescriptionValue(e.target.value);
   }
 
-  // find all sub todos of this todo
-
-
-
   if (editing) {
     return (
       <div className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
-        <form method="post" onSubmit={handleEditSubmit}>
+        <form method="post" onSubmit={(e) => {
+          handleSubmit(e, tid);
+          setEditing(false);
+        }}>
           <div>
             <label>
               priority:
@@ -189,17 +193,15 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           <hr />
 
           <div>
-            <label>
-              description:
-
-              <textarea name='description' type="text" value={descriptionValue} onChange={handleInputDescriptionChange}/>
-            </label>
+            
+            <textarea name='description' type="text" value={descriptionValue} placeholder="description" onChange={handleInputDescriptionChange}/>
+            
           </div>
 
           <hr />
 
           <div>
-            <button onClick={handleOnEdit}>{isLoading ? 'loading...' : 'submit'}</button>
+            <button type="submit">submit</button>
           </div>
           
         </form>
@@ -216,6 +218,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
                         description={todo.description} 
                         completed={todo.completed} 
                         handleDelete={handleOnDeleteSubTodo} 
+                        handleSubmit={handleEditSubmit}
                         todos={todos} />
               })
           
@@ -231,7 +234,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
     return (
       <div className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
         <div>
-          priority: {priorityValue}
+          priority: { priorityValue == 3 ? 'high' : ( priorityValue == 2 ? 'mid' : 'low' ) }
         </div>
         
         <div>
@@ -245,7 +248,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
   
         <hr />
   
-        <textarea name='description' type="text" value={descriptionValue} readOnly/>
+        <textarea name='description' type="text" value={descriptionValue} placeholder="description" readOnly/>
 
         <hr />
 
@@ -270,6 +273,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
                         description={todo.description} 
                         completed={todo.completed} 
                         handleDelete={handleOnDeleteSubTodo} 
+                        handleSubmit={handleEditSubmit}
                         todos={todos} />
               })
           )}

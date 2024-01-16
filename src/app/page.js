@@ -231,9 +231,7 @@ export default function Home() {
         router.push('/login');
       }
       console.error(err);
-    });      
-    
-    
+    });
   }
 
   function handleDeleteRootTodo(e, tid) {
@@ -265,6 +263,54 @@ export default function Home() {
       });   
   }
 
+  function handleEditSubmit(e, subtid) {
+    e.preventDefault();
+
+    const data_obj = {
+      tid: subtid,
+      priority: e.target.priority.value,
+      description: e.target.description.value,
+      completed: e.target.completed.checked
+    };
+
+    const data_str = JSON.stringify(data_obj);
+
+    fetch('/api/users/todos', { method: 'PUT', body: data_str })
+      .then( (res) => {
+        if (!res.ok) {
+          throw new Error(`${res.statusText}`);
+        }
+
+        return res.json();
+      })
+      .then( () => {
+
+        const newSubTodos = rootTodos.map((todo) => {
+          if (todo.tid !== subtid) {
+            return todo;
+          } else {
+            return {
+              tid: todo.tid,
+              date_created: todo.date_created,
+              priority: e.target.priority.value,
+              description: e.target.description.value,
+              completed: e.target.completed.checked
+            };
+          }
+        });
+
+        setRootTodos(newSubTodos);
+      })
+      .catch( (err) => {
+        if (err.message === 'expired session') {
+          router.push('/login');
+        }
+
+        console.error(err);
+      });
+
+  }
+
   return (
     <main className={styles.main}>
 
@@ -284,6 +330,7 @@ export default function Home() {
                   description={todo.description} 
                   completed={todo.completed} 
                   handleDelete={handleDeleteRootTodo}  
+                  handleSubmit={handleEditSubmit}
                   todos={todos} />
         })}
       </div>
