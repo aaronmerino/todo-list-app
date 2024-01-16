@@ -1,10 +1,25 @@
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  row-gap: 10px;
   align-items: center;
   padding: 6rem;
   min-height: 100vh;
+}
+
+.main button {
+  margin-right: 10px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 3px;
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
+}
+
+.main button:hover {
+  background-color: #0056b3;
 }
 
 .description {

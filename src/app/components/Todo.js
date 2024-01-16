@@ -124,6 +124,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           } else {
             return {
               tid: todo.tid,
+              parentid: tid,
               date_created: todo.date_created,
               priority: e.target.priority.value,
               description: e.target.description.value,
@@ -150,7 +151,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
   function handleOnEdit() {
     setEditing(true);
-    setShowSubTodos(false);
+    // setShowSubTodos(false);
   }
 
   function handleInputPriorityChange(e) {
@@ -207,7 +208,10 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           </div>
           
         </form>
-        {/* <div div className={styles.subtodoscontainer}>
+
+        
+        
+        <div div className={styles.subtodoscontainer}>
           {showSubTodos && (
             
             subTodos.map((todo) => {
@@ -225,7 +229,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
               })
           
           )}
-        </div> */}
+        </div>
         
       </div>
       
@@ -236,33 +240,36 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
     return (
       <div className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
         <div>
-          priority: { priorityValue == 3 ? '🔴' : ( priorityValue == 2 ? '🟡' : '🟢' ) }
-        </div>
-        
-        <div>
-          created: {(new Date(date_created)).toLocaleString()}
-        </div>
-        
-        <div>
-          completed: {completedValue ? "✅" : "❌"}
-        </div>
-        
-  
-        <hr />
-  
-        <textarea name='description' type="text" value={descriptionValue} placeholder="description" readOnly/>
-
-        <hr />
-
-        <div>
-          <button onClick={(e) => handleDelete(e, tid)}>delete</button>
-          <button onClick={handleOnEdit}>edit</button>
-          <button onClick={handleOnAddSubTodo}>+</button>
-          {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? '⯆' : '⯈'}</button>)}
+          <div>
+            priority: { priorityValue == 3 ? '🔴' : ( priorityValue == 2 ? '🟡' : '🟢' ) }
+          </div>
           
-        </div>
+          <div>
+            created: {(new Date(date_created)).toLocaleString()}
+          </div>
+          
+          <div>
+            completed: {completedValue ? "✅" : "❌"}
+          </div>
+          
+    
+          <hr />
+    
+          <textarea name='description' type="text" value={descriptionValue} placeholder="description" readOnly/>
 
-        <hr />
+          <hr />
+
+          <div>
+            <button onClick={(e) => handleDelete(e, tid)}>delete</button>
+            <button onClick={handleOnEdit}>edit</button>
+            <button onClick={handleOnAddSubTodo}>+</button>
+            {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? '⯆' : '⯈'}</button>)}
+            
+          </div>
+        </div>
+        
+        
+
         <div className={styles.subtodoscontainer}>
           {showSubTodos && (
             subTodos.map((todo) => {

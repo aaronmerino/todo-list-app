@@ -172,6 +172,7 @@ export default function Home() {
     })
     .then( (data) => {
       setTodos(data.res);
+      console.log(data.res);
       setRootTodos(data.res.filter((t) => t.parentid === null));
     })
     .catch( (err) => {
@@ -291,6 +292,7 @@ export default function Home() {
           } else {
             return {
               tid: todo.tid,
+              parentid: null,
               date_created: todo.date_created,
               priority: e.target.priority.value,
               description: e.target.description.value,
@@ -315,7 +317,7 @@ export default function Home() {
     <main className={styles.main}>
 
       <div>
-        <button onClick={handleAddRootTodo}>add</button>
+        <button onClick={handleAddRootTodo}>+</button>
       </div>
 
       <div>
