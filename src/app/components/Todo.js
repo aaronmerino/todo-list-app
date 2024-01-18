@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'
-
+import { useState } from 'react';
+import { TodosContainer } from './TodosContainer';
 import styles from './styles.module.css'
 
 export function Todo({ tid, parentid, date_created, priority, description, completed, handleAddTodo, handleDeleteTodo, handleEditTodo, todos }) {
@@ -225,8 +224,15 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
         </form>
 
         
-        
-        <div div className={styles.subtodoscontainer}>
+        { showSubTodos && <TodosContainer 
+                              parentid={tid}
+                              subTodos={subTodos}
+                              ascending={true} 
+                              handleAddTodo={handleAddTodo}
+                              handleDeleteTodo={handleDeleteTodo}
+                              handleEditTodo={handleEditTodo}
+                              todos={todos}/> }
+        {/* <div className={styles.subtodoscontainer}>
           {showSubTodos && (
             
             subTodos.map((todo) => {
@@ -245,7 +251,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
               })
           
           )}
-        </div>
+        </div> */}
         
       </div>
       
@@ -278,15 +284,25 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           <div>
             <button onClick={() => handleDeleteTodo(tid)}>delete</button>
             <button onClick={handleOnEdit}>edit</button>
-            <button onClick={() => handleAddTodo(tid)}>+</button>
+            <button onClick={() => {
+              handleAddTodo(tid);
+              setShowSubTodos(true);
+            }}>+</button>
             {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? '⯆' : '⯈'}</button>)}
             
           </div>
         </div>
         
         
-
-        <div className={styles.subtodoscontainer}>
+        { showSubTodos && <TodosContainer 
+                              parentid={tid}
+                              subTodos={subTodos}
+                              ascending={true} 
+                              handleAddTodo={handleAddTodo}
+                              handleDeleteTodo={handleDeleteTodo}
+                              handleEditTodo={handleEditTodo}
+                              todos={todos}/> }
+        {/* <div className={styles.subtodoscontainer}>
           {showSubTodos && (
             subTodos.map((todo) => {
                 return <Todo 
@@ -303,7 +319,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
                         todos={todos} />
               })
           )}
-        </div>      
+        </div>       */}
       </div>
     );
 

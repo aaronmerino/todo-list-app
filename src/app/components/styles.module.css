@@ -1,24 +1,31 @@
-.todo {
+.todoscontainer {
+  font-family: var(--font-mono);
   width: 50rem;
+}
+
+.todo {
   color: black;
   background-color: #f9f9f9;
   margin: 15px;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.1);
-  font-family: var(--font-mono);
+}
+
+.todo .todoscontainer {
+  width: 100%;
+  padding: 10px;
 }
 
 .subtodo {
-  width: 100%;
   border-left: 4px solid #dddddd;
 }
 
-.todo div {
+.todoscontainer div {
   margin: 8px 0;
 }
 
-.todo input, .todo select {
+.todoscontainer input, .todoscontainer select {
   margin-left: 10px;
   background-color: #f9f9f9;
   border: none;
@@ -45,23 +52,6 @@
   outline: none;
 }
 
-.todo .subtodoscontainer {
-  margin: 15px;
-}
-
-/* .todo button {
-  margin-right: 10px;
-  padding: 8px 20px;
-  border: none;
-  border-radius: 3px;
-  background-color: #007BFF;
-  color: white;
-  cursor: pointer;
-}
-
-.todo button:hover {
-  background-color: #0056b3;
-} */
 
 .todo hr {
   border: 0;

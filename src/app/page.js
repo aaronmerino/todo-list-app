@@ -2,6 +2,7 @@
 
 import styles from './page.module.css'
 import { Todo } from './components/Todo';
+import { TodosContainer } from './components/TodosContainer';
 import { useEffect, useState, useReducer } from 'react';
 import { useRouter } from 'next/navigation'
 
@@ -297,7 +298,7 @@ export default function Home() {
       .then( () => {
 
         let newTodos = todos.map((t) => {
-          if (t.tid !== tid) {
+          if (t.tid !== todo.tid) {
             return t;
           } else {
             return {
@@ -461,7 +462,15 @@ export default function Home() {
         <button onClick={() => handleAddTodo(null)}>+</button>
       </div>
 
-      <div>
+      <TodosContainer 
+        subTodos={rootTodos}
+        ascending={true} 
+        handleAddTodo={handleAddTodo}
+        handleDeleteTodo={handleDeleteTodo}
+        handleEditTodo={handleEditTodo}
+        todos={todos}
+      />
+      {/* <div>
         {rootTodos.map((todo) => {
           console.log(todo.parentid);
           return <Todo 
@@ -477,7 +486,7 @@ export default function Home() {
                   handleEditTodo={handleEditTodo}
                   todos={todos} />
         })}
-      </div>
+      </div> */}
     </main>
   );
 }
