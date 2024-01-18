@@ -463,6 +463,7 @@ export default function Home() {
       </div>
 
       <TodosContainer 
+        parentid={null}
         subTodos={rootTodos}
         ascending={true} 
         handleAddTodo={handleAddTodo}
