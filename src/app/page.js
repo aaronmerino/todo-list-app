@@ -156,8 +156,8 @@ function generateSuperRootTodoTree(todos) {
 export default function Home() {
 
   const [todos, setTodos] = useState([]);
-  const [rootTodos, setRootTodos] = useState([]);
   const router = useRouter();
+  const rootTodos = todos.filter((t) => t.parentid === null);
 
   useEffect(() => {
     fetch('/api/users/todos', { 
@@ -172,8 +172,6 @@ export default function Home() {
     })
     .then( (data) => {
       setTodos(data.res);
-      console.log(data.res);
-      setRootTodos(data.res.filter((t) => t.parentid === null));
     })
     .catch( (err) => {
 
@@ -185,6 +183,148 @@ export default function Home() {
     });   
   }, []);
 
+
+  function handleAddTodo(parentid) {
+    const todoData = {
+      parentid: parentid,
+      priority: 1,
+      description: '',
+      completed: 0
+    };
+
+    // make request to insert blank todo
+    fetch('/api/users/todos', { 
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(todoData),       
+    })
+    .then( (res) => {
+      if (!res.ok) {
+        throw new Error(`${res.statusText}`);
+      }
+
+      return res.json();
+    })
+    .then( (data) => {
+      const addedTid = data.res.insertId;
+
+      fetch(`/api/users/todos/${addedTid}`, { 
+        method: 'GET'      
+      })
+      .then( (res) => {
+        return res.json();
+      })
+      .then( (data) => {
+        setTodos([data.res[0], ...todos]);
+      })
+      .catch( (err) => {
+        console.error(err);
+      });  
+
+    })
+    .catch( (err) => {
+      if (err.message === 'expired session') {
+        router.push('/login');
+      }
+      console.error(err);
+    });
+  }
+
+  function handleDeleteTodo(tid) {
+    const data = {
+      tid: tid,
+    };
+
+    const data_str = JSON.stringify(data);
+
+    fetch(`/api/users/todos/${tid}`, { method: 'DELETE', body: data_str })
+      .then( (res) => {
+        if (!res.ok) {
+          throw new Error(`${res.statusText}`);
+        }
+
+        return res.json();
+      })
+      .then( () => {
+        let todosToDelete = [tid];
+        let newTodos = [...todos];
+        
+        while (todosToDelete.length > 0) {
+          let currentid = todosToDelete.pop();
+
+          for (let todo in newTodos) {
+            if (todo.parentid === currentid) {
+              todoStack.push(todo.tid);
+            }
+          }
+
+          newTodos = newTodos.filter((t) => t.tid !== currentid);
+        }
+        
+
+        setTodos(newTodos);
+      })
+      .catch( (err) => {
+        if (err.message === 'expired session') {
+          router.push('/login');
+        }
+
+        console.error(err);
+      });
+  }
+
+  function handleEditTodo(todo) {
+
+    const data_obj = {
+      tid: todo.tid,
+      priority: todo.priority,
+      description: todo.description,
+      completed: todo.completed
+    };
+
+    const data_str = JSON.stringify(data_obj);
+
+    fetch('/api/users/todos', { method: 'PUT', body: data_str })
+      .then( (res) => {
+        if (!res.ok) {
+          throw new Error(`${res.statusText}`);
+        }
+
+        return res.json();
+      })
+      .then( () => {
+
+        let newTodos = todos.map((t) => {
+          if (t.tid !== tid) {
+            return t;
+          } else {
+            return {
+              ...t, 
+              priority: todo.priority,
+              description: todo.description,
+              completed: todo.completed
+            }
+          }
+
+        });
+
+        setTodos(newTodos);
+      })
+      .catch( (err) => {
+        if (err.message === 'expired session') {
+          router.push('/login');
+        }
+
+        console.error(err);
+      });
+
+  }
+
+  ///IGNORE THE FUNCTIONS BELOW
+
+  /*
   function handleAddRootTodo(e) {
     e.preventDefault();
 
@@ -312,12 +452,13 @@ export default function Home() {
       });
 
   }
+  */
 
   return (
     <main className={styles.main}>
 
       <div>
-        <button onClick={handleAddRootTodo}>+</button>
+        <button onClick={() => handleAddTodo(null)}>+</button>
       </div>
 
       <div>
@@ -331,8 +472,9 @@ export default function Home() {
                   priority={todo.priority} 
                   description={todo.description} 
                   completed={todo.completed} 
-                  handleDelete={handleDeleteRootTodo}  
-                  handleSubmit={handleEditSubmit}
+                  handleAddTodo={handleAddTodo}
+                  handleDeleteTodo={handleDeleteTodo} 
+                  handleEditTodo={handleEditTodo}
                   todos={todos} />
         })}
       </div>

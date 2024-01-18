@@ -16,6 +16,8 @@
   background-color: #007BFF;
   color: white;
   cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 14px;
 }
 
 .main button:hover {

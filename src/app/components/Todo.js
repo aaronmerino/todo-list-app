@@ -5,16 +5,20 @@ import { useRouter } from 'next/navigation'
 
 import styles from './styles.module.css'
 
-export function Todo({ tid, parentid, date_created, priority, description, completed = false, handleDelete, handleSubmit, todos }) {
+export function Todo({ tid, parentid, date_created, priority, description, completed, handleAddTodo, handleDeleteTodo, handleEditTodo, todos }) {
 
   const [editing, setEditing] = useState(false);
   const [showSubTodos, setShowSubTodos] = useState(false);
+
   const [priorityValue, setPriorityValue] = useState(priority);
   const [descriptionValue, setDescriptionValue] = useState(description);
   const [completedValue, setCompletedValue] = useState(completed);
-  const [subTodos, setSubTodos] = useState(todos.filter((t) => t.parentid === tid));
-  const router = useRouter();
 
+  const subTodos = todos.filter((t) => t.parentid === tid);
+  
+  // const router = useRouter();
+
+  /*
   function handleOnAddSubTodo(e) {
     e.preventDefault();
 
@@ -145,13 +149,14 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
   }
 
+  */
+
   function handleOnShowSubTodos(e) {
     setShowSubTodos(!showSubTodos);
   }
 
   function handleOnEdit() {
     setEditing(true);
-    // setShowSubTodos(false);
   }
 
   function handleInputPriorityChange(e) {
@@ -170,7 +175,17 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
     return (
       <div className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
         <form method="post" onSubmit={(e) => {
-          handleSubmit(e, tid);
+          e.preventDefault();
+
+          const newTodo = {
+              tid: tid,
+              priority: priorityValue,
+              description: descriptionValue,
+              completed: completedValue
+            };
+
+          handleEditTodo(newTodo);
+          
           setEditing(false);
         }}>
           <div>
@@ -223,8 +238,9 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
                         priority={todo.priority} 
                         description={todo.description} 
                         completed={todo.completed} 
-                        handleDelete={handleOnDeleteSubTodo} 
-                        handleSubmit={handleEditSubmit}
+                        handleAddTodo={handleAddTodo}
+                        handleDeleteTodo={handleDeleteTodo} 
+                        handleEditTodo={handleEditTodo}
                         todos={todos} />
               })
           
@@ -245,7 +261,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           </div>
           
           <div>
-            created: {(new Date(date_created)).toLocaleString()}
+            created: {`${(new Date(date_created)).toDateString()}, ${(new Date(date_created)).toLocaleTimeString()}`}
           </div>
           
           <div>
@@ -260,9 +276,9 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           <hr />
 
           <div>
-            <button onClick={(e) => handleDelete(e, tid)}>delete</button>
+            <button onClick={() => handleDeleteTodo(tid)}>delete</button>
             <button onClick={handleOnEdit}>edit</button>
-            <button onClick={handleOnAddSubTodo}>+</button>
+            <button onClick={() => handleAddTodo(tid)}>+</button>
             {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? '⯆' : '⯈'}</button>)}
             
           </div>
@@ -281,8 +297,9 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
                         priority={todo.priority} 
                         description={todo.description} 
                         completed={todo.completed} 
-                        handleDelete={handleOnDeleteSubTodo} 
-                        handleSubmit={handleEditSubmit}
+                        handleAddTodo={handleAddTodo}
+                        handleDeleteTodo={handleDeleteTodo} 
+                        handleEditTodo={handleEditTodo}
                         todos={todos} />
               })
           )}
