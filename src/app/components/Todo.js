@@ -191,9 +191,9 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
             <label>
               priority:
               <select name='priority' value={priorityValue} onChange={handleInputPriorityChange}>
-                <option value="1">🟢</option>
-                <option value="2">🟡</option>
-                <option value="3">🔴</option>
+                <option value="1" className={`${styles.green}`}>low</option>
+                <option value="2" className={`${styles.yellow}`}>mid</option>
+                <option value="3" className={`${styles.red}`}>high</option>
               </select>
 
             </label>
@@ -263,7 +263,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
       <div className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
         <div>
           <div>
-            priority: { priorityValue == 3 ? '🔴' : ( priorityValue == 2 ? '🟡' : '🟢' ) }
+            priority: { priorityValue == 3 ? <div className={`${styles.circle} ${styles.red}`}/> : ( priorityValue == 2 ? <div className={`${styles.circle} ${styles.yellow}`}/> : <div className={`${styles.circle} ${styles.green}`}/> ) }
           </div>
           
           <div>

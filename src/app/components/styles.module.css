@@ -5,7 +5,7 @@
 
 .todo {
   color: black;
-  background-color: #f9f9f9;
+  background-color:#f9f9f9;
   margin: 15px;
   padding: 20px;
   border-radius: 5px;
@@ -23,6 +23,28 @@
 
 .todoscontainer div {
   margin: 8px 0;
+}
+
+div.circle {
+  margin: 0;
+  padding: 0;
+  width: 16px; 
+  height: 16px; 
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.red {
+  background-color:  #EE4B2B;
+}
+
+.yellow {
+  background-color:  #FFBF00; 
+}
+
+.green {
+  background-color:  #50C878; 
 }
 
 .todoscontainer input, .todoscontainer select {
