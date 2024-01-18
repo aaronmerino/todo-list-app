@@ -7,16 +7,19 @@ import styles from './styles.module.css'
 
 export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, handleDeleteTodo, handleEditTodo, todos }) {
 
-  const [sortBy, setSortBy] = useState('DATE');
+  const [sortBy, setSortBy] = useState('DATE_NEWEST');
 
   let sortedTodos = null;
 
-  if (sortBy === "DATE") {
+  if (sortBy === "DATE_NEWEST") {
     sortedTodos = subTodos.sort((a, b) => (new Date(b.date_created)) - (new Date(a.date_created)));
-
-  } else if (sortBy === "PRIORITY") {
+  } else if (sortBy === "PRIORITY_HIGHEST") {
     sortedTodos = subTodos.sort((a, b) => b.priority - a.priority);
-  }
+  } else if (sortBy === "DATE_OLDEST") {
+    sortedTodos = subTodos.sort((a, b) => (new Date(a.date_created)) - (new Date(b.date_created)));
+  } else if (sortBy === "PRIORITY_LOWEST") {
+    sortedTodos = subTodos.sort((a, b) => a.priority - b.priority);
+  } 
 
   function handleInputSortChange(e) {
     setSortBy(e.target.value);
@@ -29,8 +32,10 @@ export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, h
         <label>
           sort:
           <select name='sort' value={sortBy} onChange={handleInputSortChange}>
-            <option value="DATE">date</option>
-            <option value="PRIORITY">priority</option>
+            <option value="DATE_OLDEST">oldest date</option>
+            <option value="DATE_NEWEST">newest date</option>
+            <option value="PRIORITY_LOWEST">lowest priority</option>
+            <option value="PRIORITY_HIGHEST">highest priority</option>
           </select>
         </label>
       </div>
