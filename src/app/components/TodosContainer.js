@@ -23,9 +23,8 @@ export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, h
   }
 
   
-  return (
-
-    <div className={styles.todoscontainer}>
+  return subTodos.length > 0 && 
+    (<div className={styles.todoscontainer}>
       <div>
         <label>
           sort:
@@ -52,7 +51,5 @@ export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, h
                                 todos={todos} />
                       })}  
       </div>
-    </div>
-
-  );
+    </div>);
 }
