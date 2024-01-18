@@ -1,6 +1,7 @@
 .todoscontainer {
   font-family: var(--font-mono);
-  width: 50rem;
+  width: 40vw;
+  min-width: 350px;
 }
 
 .todo {
@@ -15,6 +16,7 @@
 .todo .todoscontainer {
   width: 100%;
   padding: 10px;
+  min-width: auto;
 }
 
 .subtodo {
