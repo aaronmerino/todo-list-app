@@ -5,7 +5,7 @@ import { useState } from 'react';
 import styles from './styles.module.css'
 
 
-export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, handleDeleteTodo, handleEditTodo, todos }) {
+export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, handleDeleteTodo, handleEditTodo, targetTodoId, todos }) {
 
   const [sortBy, setSortBy] = useState('DATE_NEWEST');
 
@@ -53,6 +53,7 @@ export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, h
                                 handleAddTodo={handleAddTodo}
                                 handleDeleteTodo={handleDeleteTodo} 
                                 handleEditTodo={handleEditTodo}
+                                targetTodoId={targetTodoId}
                                 todos={todos} />
                       })}  
       </div>

@@ -27,14 +27,16 @@
   margin: 8px 0;
 }
 
-div.circle {
+span.circle {
   margin: 0;
   padding: 0;
-  width: 16px; 
-  height: 16px; 
+  width: 18px; 
+  height: 18px; 
   border-radius: 50%;
   display: inline-block;
   vertical-align: middle;
+  position: relative;
+  top: -1px;
 }
 
 .red {

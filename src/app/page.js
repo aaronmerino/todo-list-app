@@ -157,6 +157,8 @@ function generateSuperRootTodoTree(todos) {
 export default function Home() {
 
   const [todos, setTodos] = useState([]);
+  const [targetTodoId, setTargetTodoId] = useState(null);
+
   const router = useRouter();
   const rootTodos = todos.filter((t) => t.parentid === null);
 
@@ -219,6 +221,7 @@ export default function Home() {
       })
       .then( (data) => {
         setTodos([data.res[0], ...todos]);
+        setTargetTodoId(addedTid);
       })
       .catch( (err) => {
         console.error(err);
@@ -312,6 +315,7 @@ export default function Home() {
         });
 
         setTodos(newTodos);
+        setTargetTodoId(todo.tid);
       })
       .catch( (err) => {
         if (err.message === 'expired session') {
@@ -469,6 +473,7 @@ export default function Home() {
         handleAddTodo={handleAddTodo}
         handleDeleteTodo={handleDeleteTodo}
         handleEditTodo={handleEditTodo}
+        targetTodoId={targetTodoId}
         todos={todos}
       />
       {/* <div>

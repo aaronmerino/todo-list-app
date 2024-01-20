@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { TodosContainer } from './TodosContainer';
 import styles from './styles.module.css'
 
-export function Todo({ tid, parentid, date_created, priority, description, completed, handleAddTodo, handleDeleteTodo, handleEditTodo, todos }) {
+export function Todo({ tid, parentid, date_created, priority, description, completed, handleAddTodo, handleDeleteTodo, handleEditTodo, targetTodoId, todos }) {
+
+  const containerRef = useRef(null);
 
   const [editing, setEditing] = useState(false);
   const [showSubTodos, setShowSubTodos] = useState(false);
@@ -14,7 +16,15 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
   const [completedValue, setCompletedValue] = useState(completed);
 
   const subTodos = todos.filter((t) => t.parentid === tid);
-  
+
+  useEffect(() => {
+    if (targetTodoId !== null) {
+      if (targetTodoId === tid) {
+        containerRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  },[todos]);  
+
   // const router = useRouter();
 
   /*
@@ -172,10 +182,9 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
   if (editing) {
     return (
-      <div className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
+      <div ref={containerRef}  className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
         <form method="post" onSubmit={(e) => {
           e.preventDefault();
-
           const newTodo = {
               tid: tid,
               priority: priorityValue,
@@ -186,6 +195,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           handleEditTodo(newTodo);
           
           setEditing(false);
+
         }}>
           <div>
             <label>
@@ -211,7 +221,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
           <div>
             
-            <textarea name='description' type="text" value={descriptionValue} placeholder="description" onChange={handleInputDescriptionChange}/>
+            <textarea name='description' type="text" value={descriptionValue} placeholder="description" maxLength={255} onChange={handleInputDescriptionChange}/>
             
           </div>
 
@@ -231,27 +241,8 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
                               handleAddTodo={handleAddTodo}
                               handleDeleteTodo={handleDeleteTodo}
                               handleEditTodo={handleEditTodo}
+                              targetTodoId={targetTodoId}
                               todos={todos}/> }
-        {/* <div className={styles.subtodoscontainer}>
-          {showSubTodos && (
-            
-            subTodos.map((todo) => {
-                return <Todo 
-                        key={todo.tid} 
-                        tid={todo.tid} 
-                        parentid={tid} 
-                        date_created={todo.date_created} 
-                        priority={todo.priority} 
-                        description={todo.description} 
-                        completed={todo.completed} 
-                        handleAddTodo={handleAddTodo}
-                        handleDeleteTodo={handleDeleteTodo} 
-                        handleEditTodo={handleEditTodo}
-                        todos={todos} />
-              })
-          
-          )}
-        </div> */}
         
       </div>
       
@@ -260,10 +251,10 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
   } else {
 
     return (
-      <div className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
+      <div ref={containerRef} className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
         <div>
           <div>
-            priority: { priorityValue == 3 ? <div className={`${styles.circle} ${styles.red}`}/> : ( priorityValue == 2 ? <div className={`${styles.circle} ${styles.yellow}`}/> : <div className={`${styles.circle} ${styles.green}`}/> ) }
+            priority: { priorityValue == 3 ? <span className={`${styles.circle} ${styles.red}`}/> : ( priorityValue == 2 ? <span className={`${styles.circle} ${styles.yellow}`}/> : <span className={`${styles.circle} ${styles.green}`}/> ) }
           </div>
           
           <div>
@@ -301,25 +292,8 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
                               handleAddTodo={handleAddTodo}
                               handleDeleteTodo={handleDeleteTodo}
                               handleEditTodo={handleEditTodo}
+                              targetTodoId={targetTodoId}
                               todos={todos}/> }
-        {/* <div className={styles.subtodoscontainer}>
-          {showSubTodos && (
-            subTodos.map((todo) => {
-                return <Todo 
-                        key={todo.tid} 
-                        tid={todo.tid} 
-                        parentid={tid} 
-                        date_created={todo.date_created} 
-                        priority={todo.priority} 
-                        description={todo.description} 
-                        completed={todo.completed} 
-                        handleAddTodo={handleAddTodo}
-                        handleDeleteTodo={handleDeleteTodo} 
-                        handleEditTodo={handleEditTodo}
-                        todos={todos} />
-              })
-          )}
-        </div>       */}
       </div>
     );
 
