@@ -23,7 +23,7 @@ const isValidPassword = (password) => {
 
 const getUserFromUsername = async (username, db) => {
   try {
-    const [rows, fields] = await db.execute(`SELECT * FROM users u WHERE u.username = '${username}'`);
+    const [rows, fields] = await db.execute('SELECT * FROM users u WHERE u.username = ?', [username]);
     console.log(rows.length);
     return rows;
 
@@ -54,7 +54,7 @@ const createAccount = async (username, password, db) => {
   const password_hash = hashPassword(password, salt);
 
   try {
-    await db.execute(`INSERT INTO users (username, password_hash, salt) VALUES ('${username}', '${password_hash}', '${salt}')`);
+    await db.execute('INSERT INTO users (username, password_hash, salt) VALUES (?, ?, ?)', [username, password_hash, salt]);
   } catch (error) {
     throw new Error(error);
   }
@@ -66,7 +66,7 @@ const createSessionId = async (user_id, db) => {
   const session_id = generateRandStr(32);
 
   try {
-    await db.execute(`REPLACE INTO user_sessions (sid, uid) VALUES ('${session_id}', '${user_id}')`);
+    await db.execute('REPLACE INTO user_sessions (sid, uid) VALUES (?, ?)', [session_id, user_id]);
   } catch (error) {
     throw new Error(error);
   }
@@ -139,7 +139,7 @@ const isValidSessionId = async (session_id, username, db) => {
 
   try {
     // Check if session id exists with username and check if session id is at most 2 days
-    const [rows, fields] = await db.execute(`SELECT sid FROM user_sessions s WHERE s.sid = '${session_id}' AND s.uid = '${user_id}' AND DATEDIFF(CURRENT_TIMESTAMP, s.login_time) <= 2`);
+    const [rows, fields] = await db.execute('SELECT sid FROM user_sessions s WHERE s.sid = ? AND s.uid = ? AND DATEDIFF(CURRENT_TIMESTAMP, s.login_time) <= 2', [session_id, user_id]);
 
     if (rows.length === 0) {
       return false;
@@ -173,7 +173,7 @@ const getTodos = async (username, session_id, db) => {
   const user_id = user_data[0].uid;
 
   try {
-    const [rows, _] = await db.execute(`SELECT tid, parentid, date_created, priority, description, completed FROM todos t WHERE t.uid = '${user_id}'`);
+    const [rows, _] = await db.execute('SELECT tid, parentid, date_created, priority, description, completed FROM todos t WHERE t.uid = ?', [user_id]);
 
     return rows;
 
@@ -235,7 +235,7 @@ const insertTodo = async (username, session_id, todo, db) => {
   if (todo.parentid !== null) {
     console.log('sdfdf')
     try {
-      const [res, _] = await db.execute(`INSERT INTO todos (uid, parentid, priority, description) VALUES ('${user_id}', '${todo.parentid}', '${todo.priority}', '${todo.description}')`);
+      const [res, _] = await db.execute('INSERT INTO todos (uid, parentid, priority, description) VALUES (?, ?, ?, ?)', [user_id, todo.parentid, todo.priority, todo.description]);
   
       return res;
   
@@ -246,7 +246,7 @@ const insertTodo = async (username, session_id, todo, db) => {
   } else {
     console.log('sdfdf34324534543')
     try {
-      const [res, _] = await db.execute(`INSERT INTO todos (uid, priority, description) VALUES ('${user_id}', '${todo.priority}', '${todo.description}')`);
+      const [res, _] = await db.execute('INSERT INTO todos (uid, priority, description) VALUES (?, ?, ?)', [user_id, todo.priority, todo.description]);
   
       return res;
   
@@ -277,7 +277,7 @@ const getTodo = async (username, session_id, tid, db) => {
   }
 
   try {
-    const [rows, _] = await db.execute(`SELECT tid, parentid, date_created, priority, description, completed FROM todos t WHERE t.tid = '${tid}' `);
+    const [rows, _] = await db.execute('SELECT tid, parentid, date_created, priority, description, completed FROM todos t WHERE t.tid = ?', [tid]);
 
     return rows;
 
@@ -304,7 +304,7 @@ const deleteTodo = async (username, session_id, tid, db) => {
   }
 
   try {
-    const [rows, _] = await db.execute(`DELETE FROM todos t WHERE t.tid = '${tid}' `);
+    const [rows, _] = await db.execute('DELETE FROM todos t WHERE t.tid = ?', [tid]);
 
     return rows;
 
@@ -333,7 +333,8 @@ const editTodo = async (username, session_id, todo, db) => {
   const tid = todo.tid;
 
   try {
-    const res = await db.execute(`UPDATE todos t SET t.priority = '${todo.priority}', t.description = '${todo.description}', t.completed = '${todo.completed ? 1 : 0}' WHERE t.tid = ${todo.tid}`);
+    console.log(todo.description);
+    const res = await db.execute('UPDATE todos t SET t.priority = ?, t.description = ?, t.completed = ? WHERE t.tid = ?', [todo.priority, todo.description, todo.completed ? 1 : 0, todo.tid]);
 
     return res;
 
