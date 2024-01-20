@@ -6,6 +6,8 @@
   align-items: center;
   padding: 6rem;
   min-height: 100vh;
+  color: #e8e6e3;
+  background-color: #1b1e1f;
 }
 
 .main button {
@@ -13,7 +15,7 @@
   padding: 8px 20px;
   border: none;
   border-radius: 3px;
-  background-color: #3399FF;
+  background-color: #2858b1;
   color: rgb(255, 255, 255);
   cursor: pointer;
   font-family: var(--font-mono);

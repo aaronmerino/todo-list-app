@@ -20,10 +20,10 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
   useEffect(() => {
     if (targetTodoId !== null) {
       if (targetTodoId === tid) {
-        containerRef.current.scrollIntoView({ behavior: 'smooth' });
+        containerRef.current.scrollIntoView({ behavior: 'smooth', block: "center" });
       }
     }
-  },[todos]);  
+  }, [todos]);  
 
   // const router = useRouter();
 
@@ -182,7 +182,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
 
   if (editing) {
     return (
-      <div ref={containerRef}  className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
+      <div ref={containerRef}  className={   `${targetTodoId === tid ? styles.selectedTodo : ``} ${parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}`   }>
         <form method="post" onSubmit={(e) => {
           e.preventDefault();
           const newTodo = {
@@ -251,7 +251,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
   } else {
 
     return (
-      <div ref={containerRef} className={parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}>
+      <div ref={containerRef} className={ `${targetTodoId === tid ? styles.selectedTodo : ``} ${parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}` }>
         <div>
           <div>
             priority: { priorityValue == 3 ? <span className={`${styles.circle} ${styles.red}`}/> : ( priorityValue == 2 ? <span className={`${styles.circle} ${styles.yellow}`}/> : <span className={`${styles.circle} ${styles.green}`}/> ) }
