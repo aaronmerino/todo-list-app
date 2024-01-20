@@ -20,7 +20,7 @@
 }
 
 .subtodo {
-  border-left: 4px solid #3c4345;
+  border-left: 4px solid #282d2e;
 }
 
 .todoscontainer div {
@@ -92,7 +92,7 @@ span.circle {
   }
   50% {
     transform: scale(1.02);
-    background-color: #5d686b;
+    background-color: #4d5658;
   }
   100% {
     transform: scale(1);

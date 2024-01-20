@@ -15,15 +15,15 @@
   padding: 8px 20px;
   border: none;
   border-radius: 3px;
-  background-color: #2858b1;
-  color: rgb(255, 255, 255);
+  background-color: #0f0f11;
+  color: #e8e6e3;
   cursor: pointer;
   font-family: var(--font-mono);
   font-size: 14px;
 }
 
 .main button:hover {
-  background-color: #50a7ff;
+  background-color: #3c3c44;
 }
 
 .description {
