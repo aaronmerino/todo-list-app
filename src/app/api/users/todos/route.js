@@ -82,8 +82,9 @@ export async function PUT(request) {
   const priority = data.priority;
   const description = data.description;
   const completed = data.completed;
+  const completion_date = data.completion_date;
 
-  const todo = {tid: tid, priority: priority, description: description, completed: completed};
+  const todo = {tid: tid, priority: priority, description: description, completed: completed, completion_date: data.completion_date};
 
   try {
     const res = await accounts.editTodo(username, session_id, todo, db);

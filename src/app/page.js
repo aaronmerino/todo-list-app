@@ -154,6 +154,26 @@ function generateSuperRootTodoTree(todos) {
   return superRootTodo;
 }
 
+
+function getDateTime() {
+  let now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth() + 1;
+  let day = now.getDate();
+  let hour = now.getHours();
+  let minute = now.getMinutes();
+  let second = now.getSeconds();
+  
+  // Pad to two digits
+  month = month < 10 ? '0' + month : month;
+  day = day < 10 ? '0' + day : day;
+  hour = hour < 10 ? '0' + hour : hour;
+  minute = minute < 10 ? '0' + minute : minute;
+  second = second < 10 ? '0' + second : second;
+  
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+}
+
 export default function Home() {
 
   const [todos, setTodos] = useState([]);
@@ -280,12 +300,14 @@ export default function Home() {
   }
 
   function handleEditTodo(todo) {
+    const now = getDateTime();
 
     const data_obj = {
       tid: todo.tid,
       priority: todo.priority,
       description: todo.description,
-      completed: todo.completed
+      completed: todo.completed,
+      completion_date: now
     };
 
     const data_str = JSON.stringify(data_obj);
@@ -300,40 +322,23 @@ export default function Home() {
       })
       .then( () => {
 
-        fetch(`/api/users/todos/${todo.tid}`, { 
-          method: 'GET'      
-        })
-        .then( (res) => {
-          return res.json();
-        })
-        .then( (data) => {
-          const newTodo = data.res[0];
-          
-          console.log('------');
-          console.log(newTodo);
-          let newTodos = todos.map((t) => {
-            if (t.tid !== todo.tid) {
-              return t;
-            } else {
-              return {
-                ...t, 
-                priority: newTodo.priority,
-                description: newTodo.description,
-                completed: newTodo.completed,
-                completion_date: newTodo.completion_date
-              }
+        let newTodos = todos.map((t) => {
+          if (t.tid !== todo.tid) {
+            return t;
+          } else {
+            return {
+              ...t, 
+              priority: todo.priority,
+              description: todo.description,
+              completed: todo.completed,
+              completion_date: now
             }
-  
-          });
-  
-          setTodos(newTodos);
-          setTargetTodoId(todo.tid);
-        })
-        .catch( (err) => {
-          console.error(err);
-        });  
+          }
 
+        });
 
+        setTodos(newTodos);
+        setTargetTodoId(todo.tid);
       })
       .catch( (err) => {
         if (err.message === 'expired session') {
