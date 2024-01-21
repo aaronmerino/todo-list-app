@@ -331,7 +331,7 @@ export default function Home() {
               priority: todo.priority,
               description: todo.description,
               completed: todo.completed,
-              completion_date: now
+              completion_date: t.completed !== todo.completed ? now : t.completion_date
             }
           }
 
