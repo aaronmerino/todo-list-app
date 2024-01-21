@@ -5,6 +5,7 @@
 }
 
 .todo {
+  position: relative;
   color: #e8e6e3;
   background-color:#1b1e1f;
   margin: 15px;

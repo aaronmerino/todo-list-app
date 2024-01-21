@@ -50,6 +50,7 @@ export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, h
                                 priority={todo.priority} 
                                 description={todo.description} 
                                 completed={todo.completed} 
+                                completion_date={todo.completion_date}
                                 handleAddTodo={handleAddTodo}
                                 handleDeleteTodo={handleDeleteTodo} 
                                 handleEditTodo={handleEditTodo}

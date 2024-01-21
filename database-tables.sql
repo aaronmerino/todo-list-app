@@ -29,6 +29,10 @@ CREATE TABLE todos (
   CONSTRAINT PriorityRange CHECK (priority >= 1 AND priority <= 3)
 );
 
+-- if we add this, then the collumn completed becomes redundant i think.
+-- a completion_date that is null means its not completed yet.
+ALTER TABLE todos ADD COLUMN completion_date TIMESTAMP AFTER completed;
+
 -- I want todos to have sub-todos
 -- Should we create another table with two fields (parentid, childid)
 -- A parent can have many children

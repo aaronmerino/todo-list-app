@@ -173,7 +173,7 @@ const getTodos = async (username, session_id, db) => {
   const user_id = user_data[0].uid;
 
   try {
-    const [rows, _] = await db.execute('SELECT tid, parentid, date_created, priority, description, completed FROM todos t WHERE t.uid = ?', [user_id]);
+    const [rows, _] = await db.execute('SELECT tid, parentid, date_created, priority, description, completed, completion_date FROM todos t WHERE t.uid = ?', [user_id]);
 
     return rows;
 
@@ -277,7 +277,7 @@ const getTodo = async (username, session_id, tid, db) => {
   }
 
   try {
-    const [rows, _] = await db.execute('SELECT tid, parentid, date_created, priority, description, completed FROM todos t WHERE t.tid = ?', [tid]);
+    const [rows, _] = await db.execute('SELECT tid, parentid, date_created, priority, description, completed, completion_date FROM todos t WHERE t.tid = ?', [tid]);
 
     return rows;
 
@@ -330,12 +330,23 @@ const editTodo = async (username, session_id, todo, db) => {
     throw new Error("Todo does not exist");
   }
 
-  const tid = todo.tid;
-
   try {
     console.log(todo.description);
-    const res = await db.execute('UPDATE todos t SET t.priority = ?, t.description = ?, t.completed = ? WHERE t.tid = ?', [todo.priority, todo.description, todo.completed ? 1 : 0, todo.tid]);
+    
+    if (todo.completed) {
+      if (!todo_list[0].completed) {
+        const res = await db.execute('UPDATE todos t SET t.priority = ?, t.description = ?, t.completed = 1, t.completion_date = NOW() WHERE t.tid = ?', [todo.priority, todo.description, todo.tid]);
 
+        return res;
+      } else {
+        const res = await db.execute('UPDATE todos t SET t.priority = ?, t.description = ?, t.completed = 1 WHERE t.tid = ?', [todo.priority, todo.description, todo.tid]);
+
+        return res;
+      }
+    } 
+    
+    const res = await db.execute('UPDATE todos t SET t.priority = ?, t.description = ?, t.completed = 0, t.completion_date = NULL WHERE t.tid = ?', [todo.priority, todo.description, todo.tid]);
+      
     return res;
 
   } catch (error) {

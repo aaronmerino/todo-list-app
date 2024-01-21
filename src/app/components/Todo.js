@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { TodosContainer } from './TodosContainer';
 import styles from './styles.module.css'
 
-export function Todo({ tid, parentid, date_created, priority, description, completed, handleAddTodo, handleDeleteTodo, handleEditTodo, targetTodoId, todos }) {
+export function Todo({ tid, parentid, date_created, priority, description, completed, completion_date, handleAddTodo, handleDeleteTodo, handleEditTodo, targetTodoId, todos }) {
 
   const containerRef = useRef(null);
 
@@ -180,6 +180,9 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
     setDescriptionValue(e.target.value);
   }
 
+  if (completedValue) {
+    console.log(completion_date);
+  }
   if (editing) {
     return (
       <div ref={containerRef}  className={   `${targetTodoId === tid ? styles.selectedTodo : ``} ${parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}`   }>
@@ -262,7 +265,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           </div>
           
           <div>
-            completed: {completedValue ? "✅" : "❌"}
+            completed: {completedValue ? "✅" : "❌"} {completed ? `${(new Date(completion_date)).toDateString()}, ${(new Date(completion_date)).toLocaleTimeString()}` : null}
           </div>
           
     
@@ -279,7 +282,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
               handleAddTodo(tid);
               setShowSubTodos(true);
             }}>+</button>
-            {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? '⯆' : '⯈'}</button>)}
+            {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? '▼' : '▶'}</button>)}
             
           </div>
         </div>

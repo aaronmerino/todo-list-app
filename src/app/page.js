@@ -300,22 +300,40 @@ export default function Home() {
       })
       .then( () => {
 
-        let newTodos = todos.map((t) => {
-          if (t.tid !== todo.tid) {
-            return t;
-          } else {
-            return {
-              ...t, 
-              priority: todo.priority,
-              description: todo.description,
-              completed: todo.completed
+        fetch(`/api/users/todos/${todo.tid}`, { 
+          method: 'GET'      
+        })
+        .then( (res) => {
+          return res.json();
+        })
+        .then( (data) => {
+          const newTodo = data.res[0];
+          
+          console.log('------');
+          console.log(newTodo);
+          let newTodos = todos.map((t) => {
+            if (t.tid !== todo.tid) {
+              return t;
+            } else {
+              return {
+                ...t, 
+                priority: newTodo.priority,
+                description: newTodo.description,
+                completed: newTodo.completed,
+                completion_date: newTodo.completion_date
+              }
             }
-          }
+  
+          });
+  
+          setTodos(newTodos);
+          setTargetTodoId(todo.tid);
+        })
+        .catch( (err) => {
+          console.error(err);
+        });  
 
-        });
 
-        setTodos(newTodos);
-        setTargetTodoId(todo.tid);
       })
       .catch( (err) => {
         if (err.message === 'expired session') {
