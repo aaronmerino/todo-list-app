@@ -279,17 +279,15 @@ export default function Home() {
         
         while (todosToDelete.length > 0) {
           let currentid = todosToDelete.pop();
-
-          for (let todo in newTodos) {
-            if (todo.parentid === currentid) {
-              todoStack.push(todo.tid);
+          for (let todo of newTodos) {   
+            if (todo.parentid == currentid) {
+              todosToDelete.push(todo.tid);
             }
           }
 
           newTodos = newTodos.filter((t) => t.tid !== currentid);
         }
         
-
         setTodos(newTodos);
       })
       .catch( (err) => {

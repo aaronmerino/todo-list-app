@@ -25,6 +25,7 @@ export function Calender({todos}) {
   Nov: 30
   Dec: 31
   */
+  console.log('====');
   console.log(todos);
   const now = new Date();
   const currYear = now.getFullYear();

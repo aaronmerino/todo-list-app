@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react';
-import { TodosContainer } from './TodosContainer';
+import { useRef } from 'react';
 import styles from './calender-styles.module.css'
 
 function getCurrentDate() {

@@ -5,8 +5,11 @@
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
   place-items: center; 
-  padding: 6rem;
+  padding: 10px;
   margin: 20px;
+  width: 100%; 
+  min-width: 100px; 
+  max-width: 150px; 
   border-radius: 5px;
   box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.4);
   font-family: var(--font-mono);
@@ -16,8 +19,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   background-color: #101213;
   color: #e8e6e3;
   border-radius: 20%;
