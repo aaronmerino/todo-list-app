@@ -4,6 +4,7 @@
   grid-template-rows: auto;
   grid-template-areas:
     "calender main other-container"; 
+  grid-gap: 10px;
 }
 
 .calender {

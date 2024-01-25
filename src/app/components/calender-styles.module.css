@@ -6,7 +6,8 @@
   gap: 5px;
   place-items: center; 
   padding: 10px;
-  margin: 20px;
+  margin: 0px;
+  margin-left: 10px;
   width: 100%; 
   min-width: 100px; 
   max-width: 150px; 
