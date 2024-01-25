@@ -51,7 +51,7 @@ export function Day({
     <div ref={dayRef} 
         className={`${styles.day} ${lightBackground ? styles.lightBackground : ''} ${isToday ? styles.currentDay : ''}`} 
         title={`${(new Date(date)).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}`}
-        style={ totalTodosDone != 0 ? {backgroundColor : `hsl(${lightBackground ? '250' : '80'}, ${Math.min(totalTodosDone*6, 100)}%, ${lightBackground ? '50%' : '25%'})`} : {} }
+        style={ totalTodosDone != 0 ? {backgroundColor : `hsl(${lightBackground ? '260' : '80'}, ${Math.min(10 + totalTodosDone*totalTodosDone, 100)}%, ${Math.min(40 + totalTodosDone*1.25, 50)}%)`} : {} }
         > 
         
         {/* {totalTodosDone == 0 ? '' : totalTodosDone}  */}

@@ -359,28 +359,26 @@ export default function Home() {
 
 
   return (
-    <main className={styles.gridcontainer}>
-      <div className={styles.calender}>
-        <Calender todos={todos}/>
+    <main className={styles.main}>
+      
+      <Calender todos={todos}/>
+
+      <div>
+        <button onClick={() => handleAddTodo(null)}>+</button>
       </div>
 
-      <div className={styles.main}>
-        <div>
-          <button onClick={() => handleAddTodo(null)}>+</button>
-        </div>
-
-        <TodosContainer 
-          parentid={null}
-          subTodos={rootTodos}
-          ascending={true} 
-          handleAddTodo={handleAddTodo}
-          handleDeleteTodo={handleDeleteTodo}
-          handleEditTodo={handleEditTodo}
-          targetTodoId={targetTodoId}
-          resetTargetTodoId={resetTargetTodoId}
-          todos={todos}
-        />
-      </div>
+      <TodosContainer 
+        parentid={null}
+        subTodos={rootTodos}
+        ascending={true} 
+        handleAddTodo={handleAddTodo}
+        handleDeleteTodo={handleDeleteTodo}
+        handleEditTodo={handleEditTodo}
+        targetTodoId={targetTodoId}
+        resetTargetTodoId={resetTargetTodoId}
+        todos={todos}
+      />
+      
     </main>
   );
 }
