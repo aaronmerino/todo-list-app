@@ -1,9 +1,9 @@
 'use client'
 
 import styles from './page.module.css'
-import { Todo } from './components/Todo';
 import { TodosContainer } from './components/TodosContainer';
-import { useEffect, useState, useReducer } from 'react';
+import { Calender } from './components/Calender';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation'
 
 /*
@@ -178,6 +178,7 @@ export default function Home() {
 
   const [todos, setTodos] = useState([]);
   const [targetTodoId, setTargetTodoId] = useState(null);
+  const latestTargetTodoId = useRef(null);
 
   const router = useRouter();
   const rootTodos = todos.filter((t) => t.parentid === null);
@@ -242,6 +243,7 @@ export default function Home() {
       .then( (data) => {
         setTodos([data.res[0], ...todos]);
         setTargetTodoId(addedTid);
+        latestTargetTodoId.current = addedTid;
       })
       .catch( (err) => {
         console.error(err);
@@ -331,14 +333,14 @@ export default function Home() {
               priority: todo.priority,
               description: todo.description,
               completed: todo.completed,
-              completion_date: t.completed !== todo.completed ? now : t.completion_date
+              completion_date: !t.completed && todo.completed ? now : (todo.completed ? t.completion_date : null)
             }
           }
-
         });
 
         setTodos(newTodos);
         setTargetTodoId(todo.tid);
+        latestTargetTodoId.current = todo.tid;
       })
       .catch( (err) => {
         if (err.message === 'expired session') {
@@ -350,172 +352,37 @@ export default function Home() {
 
   }
 
-  ///IGNORE THE FUNCTIONS BELOW
-
-  /*
-  function handleAddRootTodo(e) {
-    e.preventDefault();
-
-    const data = {
-      parentid: null,
-      priority: 1,
-      description: '',
-      completed: 0
-    };
-
-    // make request to insert blank todo
-    fetch('/api/users/todos', { 
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),       
-    })
-    .then( (res) => {
-      if (!res.ok) {
-        throw new Error(`${res.statusText}`);
-      }
-
-      return res.json();
-    })
-    .then( (data) => {
-      const addedTid = data.res.insertId;
-
-      fetch(`/api/users/todos/${addedTid}`, { 
-        method: 'GET'      
-      })
-      .then( (res) => {
-        return res.json();
-      })
-      .then( (data) => {
-        setRootTodos([data.res[0], ...rootTodos]);
-      })
-      .catch( (err) => {
-        console.error(err);
-      });  
-
-    })
-    .catch( (err) => {
-      if (err.message === 'expired session') {
-        router.push('/login');
-      }
-      console.error(err);
-    });
+  function resetTargetTodoId(tid) {
+    if (tid === latestTargetTodoId.current) {
+      setTargetTodoId(null);
+      latestTargetTodoId.current = null;
+    }
   }
 
-  function handleDeleteRootTodo(e, tid) {
-    e.preventDefault();
-
-    const data_obj = {
-      tid: tid,
-    };
-
-    const data_str = JSON.stringify(data_obj);
-
-    fetch(`/api/users/todos/${tid}`, { method: 'DELETE', body: data_str })
-      .then( (res) => {
-        if (!res.ok) {
-          throw new Error(`${res.statusText}`);
-        }
-
-        return res.json();
-      })
-      .then( (data) => {
-        setRootTodos(rootTodos.filter((t) => t.tid !== tid));
-      })
-      .catch( (err) => {
-        if (err.message === 'expired session') {
-          router.push('/login');
-        }
-
-        console.error(err);
-      });   
-  }
-
-  function handleEditSubmit(e, subtid) {
-    e.preventDefault();
-
-    const data_obj = {
-      tid: subtid,
-      priority: e.target.priority.value,
-      description: e.target.description.value,
-      completed: e.target.completed.checked
-    };
-
-    const data_str = JSON.stringify(data_obj);
-
-    fetch('/api/users/todos', { method: 'PUT', body: data_str })
-      .then( (res) => {
-        if (!res.ok) {
-          throw new Error(`${res.statusText}`);
-        }
-
-        return res.json();
-      })
-      .then( () => {
-
-        const newSubTodos = rootTodos.map((todo) => {
-          if (todo.tid !== subtid) {
-            return todo;
-          } else {
-            return {
-              tid: todo.tid,
-              parentid: null,
-              date_created: todo.date_created,
-              priority: e.target.priority.value,
-              description: e.target.description.value,
-              completed: e.target.completed.checked
-            };
-          }
-        });
-
-        setRootTodos(newSubTodos);
-      })
-      .catch( (err) => {
-        if (err.message === 'expired session') {
-          router.push('/login');
-        }
-
-        console.error(err);
-      });
-
-  }
-  */
 
   return (
-    <main className={styles.main}>
-
-      <div>
-        <button onClick={() => handleAddTodo(null)}>+</button>
+    <main className={styles.gridcontainer}>
+      <div className={styles.calender}>
+        <Calender todos={todos}/>
       </div>
 
-      <TodosContainer 
-        parentid={null}
-        subTodos={rootTodos}
-        ascending={true} 
-        handleAddTodo={handleAddTodo}
-        handleDeleteTodo={handleDeleteTodo}
-        handleEditTodo={handleEditTodo}
-        targetTodoId={targetTodoId}
-        todos={todos}
-      />
-      {/* <div>
-        {rootTodos.map((todo) => {
-          console.log(todo.parentid);
-          return <Todo 
-                  key={todo.tid} 
-                  tid={todo.tid} 
-                  parentid={todo.parentid} 
-                  date_created={todo.date_created} 
-                  priority={todo.priority} 
-                  description={todo.description} 
-                  completed={todo.completed} 
-                  handleAddTodo={handleAddTodo}
-                  handleDeleteTodo={handleDeleteTodo} 
-                  handleEditTodo={handleEditTodo}
-                  todos={todos} />
-        })}
-      </div> */}
+      <div className={styles.main}>
+        <div>
+          <button onClick={() => handleAddTodo(null)}>+</button>
+        </div>
+
+        <TodosContainer 
+          parentid={null}
+          subTodos={rootTodos}
+          ascending={true} 
+          handleAddTodo={handleAddTodo}
+          handleDeleteTodo={handleDeleteTodo}
+          handleEditTodo={handleEditTodo}
+          targetTodoId={targetTodoId}
+          resetTargetTodoId={resetTargetTodoId}
+          todos={todos}
+        />
+      </div>
     </main>
   );
 }

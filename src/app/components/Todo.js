@@ -2,9 +2,22 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { TodosContainer } from './TodosContainer';
-import styles from './styles.module.css'
+import styles from './todos-styles.module.css'
 
-export function Todo({ tid, parentid, date_created, priority, description, completed, completion_date, handleAddTodo, handleDeleteTodo, handleEditTodo, targetTodoId, todos }) {
+export function Todo({ 
+  tid, 
+  parentid, 
+  date_created, 
+  priority, 
+  description, 
+  completed, 
+  completion_date, 
+  handleAddTodo, 
+  handleDeleteTodo, 
+  handleEditTodo, 
+  resetTargetTodoId, 
+  targetTodoId, 
+  todos }) {
 
   const containerRef = useRef(null);
 
@@ -20,7 +33,14 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
   useEffect(() => {
     if (targetTodoId !== null) {
       if (targetTodoId === tid) {
+        
         containerRef.current.scrollIntoView({ behavior: 'smooth', block: "center" });
+
+        let timerId = setTimeout(() => {
+          resetTargetTodoId(tid);
+          clearTimeout(timerId);
+        }, 1000);
+
       }
     }
   }, [todos]);  
@@ -180,9 +200,6 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
     setDescriptionValue(e.target.value);
   }
 
-  if (completedValue) {
-    console.log(completion_date);
-  }
   if (editing) {
     return (
       <div ref={containerRef}  className={   `${targetTodoId === tid ? styles.selectedTodo : ``} ${parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}`   }>
@@ -265,7 +282,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
           </div>
           
           <div>
-            completed: {completedValue ? "✅" : "❌"} {completed ? `${(new Date(completion_date)).toDateString()}, ${(new Date(completion_date)).toLocaleTimeString()}` : null}
+            completed: {completedValue ? "✅" : "❌"}  {completed ? <span className={`${styles.highlight}`}> {`${(new Date(completion_date)).toDateString()}, ${(new Date(completion_date)).toLocaleTimeString()}`} </span> : null} 
           </div>
           
     
@@ -296,6 +313,7 @@ export function Todo({ tid, parentid, date_created, priority, description, compl
                               handleDeleteTodo={handleDeleteTodo}
                               handleEditTodo={handleEditTodo}
                               targetTodoId={targetTodoId}
+                              resetTargetTodoId={resetTargetTodoId}
                               todos={todos}/> }
       </div>
     );

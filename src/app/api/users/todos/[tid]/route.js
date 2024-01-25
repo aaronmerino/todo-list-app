@@ -3,7 +3,7 @@ const accounts = require('../../../accounts');
 
 //GET SPECIFIC TODOS
 export async function GET(request, { params }) {
-  if (!request.cookies.has('session_id')) {
+  if (!request.cookies.has('session_id') || !request.cookies.has('username')) {
     return Response.json(null, {status: 400, statusText: `expired session`});
   }
 
@@ -30,7 +30,7 @@ export async function GET(request, { params }) {
 
 
 export async function DELETE(request, { params }) {
-  if (!request.cookies.has('session_id')) {
+  if (!request.cookies.has('session_id') || !request.cookies.has('username')) {
     return Response.json(null, {status: 400, statusText: `expired session`});
   }
   

@@ -2,12 +2,22 @@
 
 import { Todo } from './Todo';
 import { useState } from 'react';
-import styles from './styles.module.css'
+import styles from './todos-styles.module.css'
 
 
-export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, handleDeleteTodo, handleEditTodo, targetTodoId, todos }) {
+export function TodosContainer({ 
+  parentid, 
+  subTodos, 
+  ascending, 
+  handleAddTodo, 
+  handleDeleteTodo, 
+  handleEditTodo, 
+  targetTodoId, 
+  resetTargetTodoId, 
+  todos }) {
 
   const [sortBy, setSortBy] = useState('DATE_NEWEST');
+  const [showCompleted, setShowCompleted] = useState(true);
 
   let sortedTodos = null;
 
@@ -21,8 +31,16 @@ export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, h
     sortedTodos = subTodos.sort((a, b) => a.priority - b.priority);
   } 
 
+  if (!showCompleted) {
+    sortedTodos = sortedTodos.filter((t) => !t.completed);
+  }
+
   function handleInputSortChange(e) {
     setSortBy(e.target.value);
+  }
+
+  function handleShowInputChange(e) {
+    setShowCompleted(e.target.checked);
   }
 
   
@@ -37,6 +55,10 @@ export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, h
             <option value="PRIORITY_LOWEST">lowest priority</option>
             <option value="PRIORITY_HIGHEST">highest priority</option>
           </select>
+        </label>
+        <label>
+          show completed:
+          <input name='showCompleted' type="checkbox" checked={showCompleted} onChange={handleShowInputChange}/>
         </label>
       </div>
 
@@ -54,6 +76,7 @@ export function TodosContainer({ parentid, subTodos, ascending, handleAddTodo, h
                                 handleAddTodo={handleAddTodo}
                                 handleDeleteTodo={handleDeleteTodo} 
                                 handleEditTodo={handleEditTodo}
+                                resetTargetTodoId={resetTargetTodoId}
                                 targetTodoId={targetTodoId}
                                 todos={todos} />
                       })}  

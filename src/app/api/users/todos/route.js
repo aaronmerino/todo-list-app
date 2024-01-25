@@ -3,7 +3,7 @@ const accounts = require('../../accounts');
 
 //GET ALL TODOS
 export async function GET(request) {
-  if (!request.cookies.has('session_id')) {
+  if (!request.cookies.has('session_id') || !request.cookies.has('username')) {
     return Response.json(null, {status: 400, statusText: `expired session`});
   }
 
@@ -31,7 +31,7 @@ export async function GET(request) {
 
 // INSERT A TODO
 export async function POST(request) {
-  if (!request.cookies.has('session_id')) {
+  if (!request.cookies.has('session_id') || !request.cookies.has('username')) {
     return Response.json(null, {status: 400, statusText: `expired session`});
   }
 
@@ -64,7 +64,7 @@ export async function POST(request) {
 
 // EDIT A TODO
 export async function PUT(request) {
-  if (!request.cookies.has('session_id')) {
+  if (!request.cookies.has('session_id') || !request.cookies.has('username')) {
     return Response.json(null, {status: 400, statusText: `expired session`});
   }
 

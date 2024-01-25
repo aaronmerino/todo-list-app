@@ -1,0 +1,33 @@
+
+
+.daysContainer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  place-items: center; 
+  padding: 6rem;
+  margin: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.4);
+  font-family: var(--font-mono);
+}
+
+.day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: #101213;
+  color: #e8e6e3;
+  border-radius: 20%;
+  font-size: 12px;
+}
+
+.day.lightBackground {
+  background-color: #27292c;
+}
+
+.day.currentDay {
+  border: 2px solid #07b9ff;
+}
