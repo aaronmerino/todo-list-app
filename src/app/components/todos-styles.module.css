@@ -1,7 +1,8 @@
 .todoscontainer {
   font-family: var(--font-mono);
-  width: 40vw;
+  width: 75vw;
   min-width: 350px;
+  max-width: 1100px;
 }
 
 .todo {

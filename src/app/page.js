@@ -176,6 +176,7 @@ function getDateTime() {
 
 export default function Home() {
 
+  const [loaded, setLoaded] = useState(false);
   const [todos, setTodos] = useState([]);
   const [targetTodoId, setTargetTodoId] = useState(null);
   const latestTargetTodoId = useRef(null);
@@ -196,6 +197,7 @@ export default function Home() {
     })
     .then( (data) => {
       setTodos(data.res);
+      setLoaded(true);
     })
     .catch( (err) => {
 
@@ -359,26 +361,27 @@ export default function Home() {
 
 
   return (
-    <main className={styles.main}>
-      
-      <Calender todos={todos}/>
+    loaded && (
+      <main className={styles.main}>
+        
+        <Calender todos={todos}/>
 
-      <div>
-        <button onClick={() => handleAddTodo(null)}>+</button>
-      </div>
+        <div>
+          <button onClick={() => handleAddTodo(null)}>+</button>
+        </div>
 
-      <TodosContainer 
-        parentid={null}
-        subTodos={rootTodos}
-        ascending={true} 
-        handleAddTodo={handleAddTodo}
-        handleDeleteTodo={handleDeleteTodo}
-        handleEditTodo={handleEditTodo}
-        targetTodoId={targetTodoId}
-        resetTargetTodoId={resetTargetTodoId}
-        todos={todos}
-      />
-      
-    </main>
-  );
+        <TodosContainer 
+          parentid={null}
+          subTodos={rootTodos}
+          ascending={true} 
+          handleAddTodo={handleAddTodo}
+          handleDeleteTodo={handleDeleteTodo}
+          handleEditTodo={handleEditTodo}
+          targetTodoId={targetTodoId}
+          resetTargetTodoId={resetTargetTodoId}
+          todos={todos}
+        />
+        
+      </main>
+    ) );
 }

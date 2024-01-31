@@ -34,7 +34,7 @@ export default function Page() {
   return (
     <div className={styles.container}>
       <form className={styles.login} method="post" onSubmit={handleSubmit}>
-        {!valid && <div>invalid username or password</div>}
+        {!valid && <div className='error'>invalid username or password</div>}
         <label>
           username: <input name="username" />
         </label>

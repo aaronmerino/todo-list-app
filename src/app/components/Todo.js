@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { TodosContainer } from './TodosContainer';
+import { ConfirmationPopup } from './ConfirmPopup';
 import styles from './todos-styles.module.css'
 
 export function Todo({ 
@@ -27,6 +28,8 @@ export function Todo({
   const [priorityValue, setPriorityValue] = useState(priority);
   const [descriptionValue, setDescriptionValue] = useState(description);
   const [completedValue, setCompletedValue] = useState(completed);
+
+  const [deleteConfirmShow, setDeleteConfirmShow] = useState(false);
 
   const subTodos = todos.filter((t) => t.parentid === tid);
 
@@ -184,6 +187,10 @@ export function Todo({
     setShowSubTodos(!showSubTodos);
   }
 
+  function handleOnDelete() {
+    setDeleteConfirmShow(true);
+  }
+
   function handleOnEdit() {
     setEditing(true);
   }
@@ -292,16 +299,27 @@ export function Todo({
 
           <hr />
 
-          <div>
-            <button onClick={() => handleDeleteTodo(tid)}>delete</button>
+          <ConfirmationPopup 
+                isOpen={deleteConfirmShow} 
+                message={'confirm delete?'}
+                handleConfirm={() => {
+                          handleDeleteTodo(tid); 
+                          setDeleteConfirmShow(false) }} 
+                handleCancel={ () => {
+                          setDeleteConfirmShow(false)
+                }}/>
+
+          {!deleteConfirmShow && <div>
+            <button onClick={handleOnDelete}>delete</button>
+
             <button onClick={handleOnEdit}>edit</button>
             <button onClick={() => {
               handleAddTodo(tid);
               setShowSubTodos(true);
             }}>+</button>
-            {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? '▼' : '▶'}</button>)}
+            {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? 'hide subtodos' : 'show subtodos'}</button>)}
             
-          </div>
+          </div>}
         </div>
         
         

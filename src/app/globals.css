@@ -104,6 +104,14 @@ a {
   text-decoration: none;
 }
 
+.error {
+  background-color: rgb(255, 72, 40);
+  color: #1b1e1f;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 25px;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
