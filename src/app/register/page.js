@@ -35,14 +35,16 @@ export default function Page() {
       <form className={styles.register} method="post" onSubmit={handleSubmit}>
         {!valid && <div className='error'><p>.invalid username or password</p><p>.must not contain spaces</p> <p>.character length must be between 5 and 20</p></div>}
         <label>
-          username: <input name="username" />
+          username: <input autoComplete="new-password" name="username" />
         </label>
         
         <label>
-          password: <input type="password" name="password" />
+          password: <input type="password" autoComplete="new-password" name="password" />
         </label>
 
         <button type="submit">register</button>
+
+        <button type="button" onClick={() => router.push('/login')}>return</button>
       </form>
     </div>
 
