@@ -1,12 +1,3 @@
-/* .gridcontainer {
-  display: grid;
-  grid-template-columns: 1fr 3fr 1fr;
-  grid-template-rows: auto;
-  grid-template-areas:
-    "calender main other-container"; 
-  grid-gap: 10px;
-} */
-
 
 .main {
   /* grid-area: main; */

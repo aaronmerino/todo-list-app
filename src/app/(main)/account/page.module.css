@@ -1,0 +1,28 @@
+.main {
+  /* grid-area: main; */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  row-gap: 10px;
+  align-items: center;
+  padding: 80px;
+  min-height: 100vh;
+  color: #e8e6e3;
+  background-color: #1b1e1f;
+}
+
+.main button {
+  margin: 10px 5px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 3px;
+  background-color: #353d3d;
+  color: #e8e6e3;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+.main button:hover {
+  background-color: #495050;
+}

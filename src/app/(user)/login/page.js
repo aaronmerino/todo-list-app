@@ -24,7 +24,7 @@ export default function Page() {
       
       return response.json();
     }).then(() => {
-      router.push('/');
+      router.push('/home');
     })
     .catch(() => {
       setValid(false);

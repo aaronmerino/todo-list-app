@@ -46,7 +46,6 @@ const isValidPassword = (password) => {
 const getUserFromUsername = async (username, db) => {
   try {
     const [rows, fields] = await db.execute('SELECT * FROM users u WHERE u.username = ?', [username]);
-    console.log(rows.length);
     return rows;
 
   } catch (error) {
@@ -143,6 +142,34 @@ const login = async (username, password, db) => {
   }
 }
 
+const logout = async (username, session_id, db) => {
+  if (!isValidUsername(username)) {
+    throw new Error("Invalid Username");
+  }
+
+  if (!isValidSessionId(session_id, username, db)) {
+    throw new Error("Invalid Session");
+  }
+
+  const user_data = await getUserFromUsername(username, db);
+
+  if (user_data.length === 0) {
+    throw new Error("Username not available");
+  }
+
+  const user_id = user_data[0].uid;
+  
+  try {
+    const [rows, _] = await db.execute('DELETE FROM user_sessions s WHERE s.sid = ? AND s.uid = ?', [session_id, user_id]);
+
+    return rows;
+
+  } catch (error) {
+    throw new Error(error);
+  }  
+
+}
+
 const isValidSessionId = async (session_id, username, db) => {
   username = username.trim();
 
@@ -182,7 +209,7 @@ const getTodos = async (username, session_id, db) => {
     throw new Error("Invalid Username");
   }
 
-  if (!isValidSessionId(session_id, username, db)) {
+  if ( !(await isValidSessionId(session_id, username, db)) ) {
     throw new Error("Invalid Session");
   }
 
@@ -252,10 +279,8 @@ const insertTodo = async (username, session_id, todo, db) => {
   }
 
   const user_id = user_data[0].uid;
-  console.log(todo.parentid);
 
   if (todo.parentid !== null) {
-    console.log('sdfdf')
     try {
       const [res, _] = await db.execute('INSERT INTO todos (uid, parentid, priority, description) VALUES (?, ?, ?, ?)', [user_id, todo.parentid, todo.priority, todo.description]);
   
@@ -266,7 +291,6 @@ const insertTodo = async (username, session_id, todo, db) => {
       throw new Error(error);
     }  
   } else {
-    console.log('sdfdf34324534543')
     try {
       const [res, _] = await db.execute('INSERT INTO todos (uid, priority, description) VALUES (?, ?, ?)', [user_id, todo.priority, todo.description]);
   
@@ -353,7 +377,6 @@ const editTodo = async (username, session_id, todo, db) => {
   }
 
   try {
-    console.log(todo.description);
     
     if (todo.completed) {
       if (!todo_list[0].completed) {
@@ -385,6 +408,7 @@ module.exports = {
   createAccount,
   createSessionId,
   login,
+  logout,
   isValidSessionId,
   getTodos,
   getSubTodos,
