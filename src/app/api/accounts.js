@@ -11,13 +11,35 @@ const hashPassword = (password, salt) => {
   return hash.digest('hex');
 }
 
+const hasWhiteSpace = (s) => {
+  const re = /\s/g;
+
+  return re.test(s);
+}
+
 // TODO
 const isValidUsername = (username) => {
+  if (hasWhiteSpace(username)) {
+    return false;
+  }
+
+  if (username.length < 5  ||  username.length > 20) {
+    return false;
+  }
+
   return true;
 }
 
 // TODO
 const isValidPassword = (password) => {
+  if (hasWhiteSpace(password)) {
+    return false;
+  }
+
+  if (password.length < 5  ||  password.length > 20) {
+    return false;
+  }
+
   return true;
 }
 
@@ -33,8 +55,8 @@ const getUserFromUsername = async (username, db) => {
 }
 
 const createAccount = async (username, password, db) => {
-  username = username.trim();
-  password = password.trim();
+  // username = username.trim();
+  // password = password.trim();
 
   if (!isValidUsername(username)) {
     throw new Error("Invalid Username");
@@ -75,8 +97,8 @@ const createSessionId = async (user_id, db) => {
 }
 
 const login = async (username, password, db) => {
-  username = username.trim();
-  password = password.trim();
+  // username = username.trim();
+  // password = password.trim();
 
   if (!isValidUsername(username)) {
     throw new Error("Invalid Username");

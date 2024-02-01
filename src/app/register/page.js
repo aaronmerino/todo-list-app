@@ -33,7 +33,7 @@ export default function Page() {
   return (
     <div className={styles.container}>
       <form className={styles.register} method="post" onSubmit={handleSubmit}>
-        {!valid && <div className='error'>invalid username or password</div>}
+        {!valid && <div className='error'><p>.invalid username or password</p><p>.must not contain spaces</p> <p>.character length must be between 5 and 20</p></div>}
         <label>
           username: <input name="username" />
         </label>
