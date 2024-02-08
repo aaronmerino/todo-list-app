@@ -376,7 +376,7 @@ export default function Home() {
         <Calender handleCalenderClick={handleCalenderClick} todos={todos}/>
 
         <div>
-          <button className={isFlat ? styles.disabled : ''}disabled={isFlat} onClick={() => handleAddTodo(null)}>+</button>
+          <button className={isFlat ? styles.disabled : ''} disabled={isFlat} onClick={() => handleAddTodo(null)}>+</button>
         </div>
 
         <TodosContainer 

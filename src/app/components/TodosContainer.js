@@ -81,7 +81,7 @@ export function TodosContainer({
   }
 
   
-  return subTodos.length > 0 && 
+  return (subTodos.length > 0 || isFlat) && 
     (<div className={styles.todoscontainer}>
       <div>
         <label>
