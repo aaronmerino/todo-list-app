@@ -4,11 +4,18 @@ import { Todo } from './Todo';
 import { useState } from 'react';
 import styles from './todos-styles.module.css'
 
+function areDatesEqual(date1, date2) {
+  return date1.getFullYear() === date2.getFullYear() &&
+         date1.getMonth() === date2.getMonth() &&
+         date1.getDate() === date2.getDate();
+}
 
 export function TodosContainer({ 
   parentid, 
   subTodos, 
-  ascending, 
+  isFlat=false, 
+  filterDate=null,
+  handleReturnDefault=null,
   handleAddTodo, 
   handleDeleteTodo, 
   handleEditTodo, 
@@ -21,19 +28,49 @@ export function TodosContainer({
 
   let sortedTodos = null;
 
-  if (sortBy === "DATE_NEWEST") {
-    sortedTodos = subTodos.sort((a, b) => (new Date(b.date_created)) - (new Date(a.date_created)));
-  } else if (sortBy === "PRIORITY_HIGHEST") {
-    sortedTodos = subTodos.sort((a, b) => b.priority - a.priority);
-  } else if (sortBy === "DATE_OLDEST") {
-    sortedTodos = subTodos.sort((a, b) => (new Date(a.date_created)) - (new Date(b.date_created)));
-  } else if (sortBy === "PRIORITY_LOWEST") {
-    sortedTodos = subTodos.sort((a, b) => a.priority - b.priority);
-  } 
+  if (!isFlat) {
+    if (sortBy === "DATE_NEWEST") {
+      sortedTodos = subTodos.sort((a, b) => (new Date(b.date_created)) - (new Date(a.date_created)));
+    } else if (sortBy === "PRIORITY_HIGHEST") {
+      sortedTodos = subTodos.sort((a, b) => b.priority - a.priority);
+    } else if (sortBy === "DATE_OLDEST") {
+      sortedTodos = subTodos.sort((a, b) => (new Date(a.date_created)) - (new Date(b.date_created)));
+    } else if (sortBy === "PRIORITY_LOWEST") {
+      sortedTodos = subTodos.sort((a, b) => a.priority - b.priority);
+    } 
+  
+    if (!showCompleted) {
+      sortedTodos = sortedTodos.filter((t) => !t.completed);
+    }
+  } else {
 
-  if (!showCompleted) {
-    sortedTodos = sortedTodos.filter((t) => !t.completed);
+    if (sortBy === "DATE_NEWEST") {
+      sortedTodos = todos.sort((a, b) => (new Date(b.date_created)) - (new Date(a.date_created)));
+    } else if (sortBy === "PRIORITY_HIGHEST") {
+      sortedTodos = todos.sort((a, b) => b.priority - a.priority);
+    } else if (sortBy === "DATE_OLDEST") {
+      sortedTodos = todos.sort((a, b) => (new Date(a.date_created)) - (new Date(b.date_created)));
+    } else if (sortBy === "PRIORITY_LOWEST") {
+      sortedTodos = todos.sort((a, b) => a.priority - b.priority);
+    } 
+
+    sortedTodos = sortedTodos.filter((t) => {
+      if (!t.completed) {
+        return false;
+      }
+
+      const filterYear = parseInt(filterDate.split('-')[0]);
+      const filterMonth = parseInt(filterDate.split('-')[1]) - 1;
+      const filterDay = parseInt(filterDate.split('-')[2]);
+
+      let date1 = new Date(t.completion_date);
+      let date2 = new Date(filterYear, filterMonth, filterDay);
+
+      return areDatesEqual(date1, date2);
+    });
   }
+
+
 
   function handleInputSortChange(e) {
     setSortBy(e.target.value);
@@ -56,10 +93,15 @@ export function TodosContainer({
             <option value="PRIORITY_HIGHEST">highest priority</option>
           </select>
         </label>
-        <label>
+        {!isFlat && <label>
           show completed:
+
           <input name='showCompleted' type="checkbox" checked={showCompleted} onChange={handleShowInputChange}/>
-        </label>
+        </label>}
+        {isFlat && <span className='highlight'>displaying completed on {`${(new Date(filterDate)).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}`}</span>}
+
+        {isFlat && <button onClick={handleReturnDefault}>return</button>}
+
       </div>
 
       <div>
@@ -78,6 +120,7 @@ export function TodosContainer({
                                 handleEditTodo={handleEditTodo}
                                 resetTargetTodoId={resetTargetTodoId}
                                 targetTodoId={targetTodoId}
+                                isFlat={isFlat}
                                 todos={todos} />
                       })}  
       </div>

@@ -53,6 +53,16 @@ const getUserFromUsername = async (username, db) => {
   }
 }
 
+const getUserInfo = async (username, db) => {
+  try {
+    const [rows, _] = await db.execute('SELECT uid, username, register_time FROM users u WHERE u.username = ?', [username]);
+    return rows;
+
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 const createAccount = async (username, password, db) => {
   // username = username.trim();
   // password = password.trim();
@@ -405,6 +415,7 @@ module.exports = {
   isValidUsername,
   isValidPassword,
   getUserFromUsername,
+  getUserInfo,
   createAccount,
   createSessionId,
   login,

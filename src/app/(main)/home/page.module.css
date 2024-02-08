@@ -14,9 +14,10 @@
 
 .main button {
   margin-right: 10px;
+  margin-left: 10px;
   padding: 8px 20px;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   background-color: #353d3d;
   color: #e8e6e3;
   cursor: pointer;
@@ -26,6 +27,11 @@
 
 .main button:hover {
   background-color: #495050;
+}
+
+.main button.disabled{
+  background-color: #353d3d;
+  color: #6e6e6e;
 }
 
 .description {

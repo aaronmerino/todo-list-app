@@ -3,7 +3,6 @@ const accounts = require('./accounts');
 
 export async function GET(request) {
   // create the connection to database
-  console.log('here');
   const connection = await mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -21,7 +20,6 @@ export async function GET(request) {
 
 export async function POST(request) {
   // create the connection to database
-  console.log('here2');
   const connection = await mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -34,7 +32,6 @@ export async function POST(request) {
     `select * from users u where u.username = 'aaron';`
   );
 
-  console.log(rows);
 
   return Response.json({ rows });
 }

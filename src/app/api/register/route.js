@@ -14,7 +14,6 @@ export async function POST(request) {
   const username = formData.get('username');
   const password = formData.get('password');
 
-  console.log(formData);
   
   try {
     let res = await accounts.createAccount(username, password, db);

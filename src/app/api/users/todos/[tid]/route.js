@@ -15,7 +15,7 @@ export async function GET(request, { params }) {
     password: process.env.DB_PASS,
     database: process.env.DB_DATABASE,
   });
-  console.log(params.tid);
+  
   try {
     const res = await accounts.getTodo(username, session_id, params.tid, db);
     await db.end();
@@ -42,7 +42,7 @@ export async function DELETE(request, { params }) {
     password: process.env.DB_PASS,
     database: process.env.DB_DATABASE,
   });
-  console.log(params.tid);
+  
   try {
     const res = await accounts.deleteTodo(username, session_id, params.tid, db);
     await db.end();

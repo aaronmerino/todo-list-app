@@ -18,6 +18,7 @@ export function Todo({
   handleEditTodo, 
   resetTargetTodoId, 
   targetTodoId, 
+  isFlat,
   todos }) {
 
   const containerRef = useRef(null);
@@ -261,10 +262,10 @@ export function Todo({
         </form>
 
         
-        { showSubTodos && <TodosContainer 
+        { (showSubTodos && !isFlat) && <TodosContainer 
                               parentid={tid}
                               subTodos={subTodos}
-                              ascending={true} 
+                              
                               handleAddTodo={handleAddTodo}
                               handleDeleteTodo={handleDeleteTodo}
                               handleEditTodo={handleEditTodo}
@@ -278,7 +279,7 @@ export function Todo({
   } else {
 
     return (
-      <div ref={containerRef} className={ `${targetTodoId === tid ? styles.selectedTodo : ``} ${parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}` }>
+      <div ref={containerRef} className={ `${targetTodoId === tid ? styles.selectedTodo : ''} ${parentid !== null ? `${styles.todo} ${styles.subtodo}` : styles.todo}` }>
         <div>
           <div>
             priority: { priorityValue == 3 ? <span className={`${styles.circle} ${styles.red}`}/> : ( priorityValue == 2 ? <span className={`${styles.circle} ${styles.yellow}`}/> : <span className={`${styles.circle} ${styles.green}`}/> ) }
@@ -313,20 +314,22 @@ export function Todo({
             <button onClick={handleOnDelete}>delete</button>
 
             <button onClick={handleOnEdit}>edit</button>
-            <button onClick={() => {
+
+            {(!isFlat) && <button onClick={() => {
               handleAddTodo(tid);
               setShowSubTodos(true);
-            }}>+</button>
-            {subTodos.length !== 0 && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? 'hide subtodos' : 'show subtodos'}</button>)}
+            }}>+</button>}
+
+            {((subTodos.length !== 0) && !isFlat) && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? 'hide subtodos' : 'show subtodos'}</button>)}
             
           </div>}
         </div>
         
         
-        { showSubTodos && <TodosContainer 
+        { (showSubTodos && !isFlat) && <TodosContainer 
                               parentid={tid}
                               subTodos={subTodos}
-                              ascending={true} 
+                              
                               handleAddTodo={handleAddTodo}
                               handleDeleteTodo={handleDeleteTodo}
                               handleEditTodo={handleEditTodo}

@@ -2,7 +2,6 @@
 
 import styles from './navbar-styles.module.css'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 
 export function NavBar() { 
 

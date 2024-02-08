@@ -6,15 +6,25 @@
 .navbar ul{
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-end;
+  /* align-items: center; */
   gap: 40px;
   padding: 1.2rem 0 1.2rem 0;
-  margin: 0;  
+  margin: 0;
+  margin-right: 20px  
 }
 
 .navbar li {
   margin: 0 0.5rem;
-  font-weight: 200;
+  font-weight: 400;
   list-style-type: none;  
+  padding: 2px;
+  border-radius: 5px;
+  /* background-color: #353d3d; */
+  /* border-right: 2px solid #e8e6e3; */
+}
+
+.navbar li:hover {
+  color: #3a3a3a;
+  background-color: #e8e6e3;
 }

@@ -93,7 +93,7 @@ body {
 button {
   padding: 5px 10px;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   background-color: #007BFF;
   color: white;
   cursor: pointer;
@@ -110,6 +110,15 @@ a {
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 25px;
+}
+
+.highlight {
+  background-color: rgb(255, 169, 40);
+  color: #1b1e1f;
+  border-radius: 5px;
+  padding: 8px;
+  margin-bottom: 25px; 
+  font-size: 14px;
 }
 
 @media (prefers-color-scheme: dark) {

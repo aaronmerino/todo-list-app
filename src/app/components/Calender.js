@@ -4,7 +4,9 @@ import { useState, useRef, useEffect } from 'react';
 import { Day } from './Day';
 import styles from './calender-styles.module.css'
 
-export function Calender({todos}) {
+export function Calender({
+  handleCalenderClick,
+  todos}) {
   
   // find all todos that are completed on this date
   // the more todos completed, the more saturated the color becomes?
@@ -25,8 +27,6 @@ export function Calender({todos}) {
   Nov: 30
   Dec: 31
   */
-  console.log('====');
-  console.log(todos);
   const now = new Date();
   const currYear = now.getFullYear();
   const isLeapYear = ((currYear % 4) === 0) && ( !((currYear % 100) === 0) || ((currYear % 400) === 0) );
@@ -61,7 +61,7 @@ export function Calender({todos}) {
       const d = day < 10 ? '0' + day : day;
       const currDate = `${currYear}-${m}-${d}`;
 
-      days.push(<Day key={dayId} date={currDate} todos={todos} lightBackground={lightBackground} />)
+      days.push(<Day key={dayId} date={currDate} handleCalenderClick={handleCalenderClick} todos={todos} lightBackground={lightBackground} />)
       dayId += 1;  
     }
     lightBackground = !lightBackground;

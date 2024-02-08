@@ -5,6 +5,7 @@ import { TodosContainer } from '../../components/TodosContainer';
 import { Calender } from '../../components/Calender';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation'
+import { filter } from '../../../../jest.config';
 
 
 /*
@@ -180,6 +181,9 @@ export default function Home() {
   const [loaded, setLoaded] = useState(false);
   const [todos, setTodos] = useState([]);
   const [targetTodoId, setTargetTodoId] = useState(null);
+  const [isFlat, setIsFlat] = useState(false);
+  const [filterDate, setFilterDate] = useState(null);
+
   const latestTargetTodoId = useRef(null);
 
   const router = useRouter();
@@ -356,20 +360,31 @@ export default function Home() {
     }
   }
 
+  function handleCalenderClick(date) {
+    setIsFlat(true);
+    setFilterDate(date);
+  }
+
+  function handleReturnDefault() {
+    setIsFlat(false);
+  }
+
 
   return (
     loaded && (
       <main className={styles.main}>
-        <Calender todos={todos}/>
+        <Calender handleCalenderClick={handleCalenderClick} todos={todos}/>
 
         <div>
-          <button onClick={() => handleAddTodo(null)}>+</button>
+          <button className={isFlat ? styles.disabled : ''}disabled={isFlat} onClick={() => handleAddTodo(null)}>+</button>
         </div>
 
         <TodosContainer 
           parentid={null}
           subTodos={rootTodos}
-          ascending={true} 
+          isFlat={isFlat}
+          filterDate={filterDate}
+          handleReturnDefault={handleReturnDefault}
           handleAddTodo={handleAddTodo}
           handleDeleteTodo={handleDeleteTodo}
           handleEditTodo={handleEditTodo}
