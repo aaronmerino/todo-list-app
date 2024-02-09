@@ -19,11 +19,13 @@ function getCurrentDate() {
 export function Day({ 
   date,  // year-month-day
   handleCalenderClick,
+  selectedDate,
   lightBackground,
   todos }) {
 
   const dayRef = useRef(null);
   const isToday = date == getCurrentDate();
+  const isSelected = date == selectedDate;
 
 
   let totalTodosDone = 0;
@@ -50,7 +52,7 @@ export function Day({
 
   return (
     <div ref={dayRef} 
-        className={`${styles.day} ${lightBackground ? styles.lightBackground : ''} ${isToday ? styles.currentDay : ''}`} 
+        className={`${styles.day} ${lightBackground ? styles.lightBackground : ''} ${isToday ? styles.currentDay : ''} ${isSelected ? styles.selected : ''}`} 
         title={`${(new Date(date)).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}`}
         style={ totalTodosDone != 0 ? {backgroundColor : `hsl(${lightBackground ? '260' : '80'}, ${Math.min(25 + totalTodosDone*totalTodosDone, 100)}%, ${Math.min(40 + totalTodosDone*1.25, 50)}%)`} : {} }
         onClick={()=>handleCalenderClick(date)}

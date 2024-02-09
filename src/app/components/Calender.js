@@ -6,6 +6,7 @@ import styles from './calender-styles.module.css'
 
 export function Calender({
   handleCalenderClick,
+  selectedDate,
   todos}) {
   
   // find all todos that are completed on this date
@@ -61,7 +62,7 @@ export function Calender({
       const d = day < 10 ? '0' + day : day;
       const currDate = `${currYear}-${m}-${d}`;
 
-      days.push(<Day key={dayId} date={currDate} handleCalenderClick={handleCalenderClick} todos={todos} lightBackground={lightBackground} />)
+      days.push(<Day key={dayId} date={currDate} handleCalenderClick={handleCalenderClick} todos={todos} selectedDate={selectedDate} lightBackground={lightBackground} />)
       dayId += 1;  
     }
     lightBackground = !lightBackground;

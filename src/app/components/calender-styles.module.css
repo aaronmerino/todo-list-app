@@ -36,7 +36,7 @@
 }
 
 .day:hover {
-  border: 2px solid #07b9ff;
+  border: 2px solid #ffffff;
 }
 
 .day.lightBackground {
@@ -45,4 +45,8 @@
 
 .day.currentDay {
   border: 2px solid #07b9ff;
+}
+
+.day.selected {
+  border: 2px solid #ffffff;
 }

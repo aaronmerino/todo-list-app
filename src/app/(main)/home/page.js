@@ -367,13 +367,14 @@ export default function Home() {
 
   function handleReturnDefault() {
     setIsFlat(false);
+    setFilterDate(null);
   }
 
 
   return (
     loaded && (
       <main className={styles.main}>
-        <Calender handleCalenderClick={handleCalenderClick} todos={todos}/>
+        <Calender handleCalenderClick={handleCalenderClick} selectedDate={filterDate} todos={todos}/>
 
         <div>
           <button className={isFlat ? styles.disabled : ''} disabled={isFlat} onClick={() => handleAddTodo(null)}>+</button>
