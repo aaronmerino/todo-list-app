@@ -26,6 +26,10 @@
   border-left: 4px solid #282d2e;
 }
 
+.subtodoHighlight2 {
+  border-left: 4px solid rgb(255, 169, 40);
+}
+
 .todoscontainer div {
   margin: 12px 0;
 }
@@ -79,6 +83,13 @@ span.circle {
   border-radius: 5px;
   padding: 2px 8px;
   background-color:  #0a0c0a; 
+}
+
+.highlight2 {
+  border-radius: 5px;
+  padding: 2px 8px;
+  background-color:  rgb(255, 169, 40);
+  color: #1b1e1f;
 }
 
 .todoscontainer input, .todoscontainer select {

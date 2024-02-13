@@ -18,7 +18,6 @@ export function Todo({
   handleEditTodo, 
   resetTargetTodoId, 
   targetTodoId, 
-  isFlat,
   todos }) {
 
   const containerRef = useRef(null);
@@ -262,7 +261,7 @@ export function Todo({
         </form>
 
         
-        { (showSubTodos && !isFlat) && <TodosContainer 
+        { showSubTodos && <TodosContainer 
                               parentid={tid}
                               subTodos={subTodos}
                               
@@ -315,18 +314,20 @@ export function Todo({
 
             <button onClick={handleOnEdit}>edit</button>
 
-            {(!isFlat) && <button onClick={() => {
+            <button onClick={() => {
               handleAddTodo(tid);
               setShowSubTodos(true);
-            }}>+</button>}
+            }}>
+            +
+            </button>
 
-            {((subTodos.length !== 0) && !isFlat) && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? 'hide subtodos' : 'show subtodos'}</button>)}
+            {(subTodos.length !== 0) && (<button onClick={handleOnShowSubTodos}>{showSubTodos ? 'hide subtodos' : 'show subtodos'}</button>)}
             
           </div>}
         </div>
         
         
-        { (showSubTodos && !isFlat) && <TodosContainer 
+        { showSubTodos && <TodosContainer 
                               parentid={tid}
                               subTodos={subTodos}
                               

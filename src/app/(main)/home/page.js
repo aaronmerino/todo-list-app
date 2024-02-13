@@ -2,6 +2,7 @@
 
 import styles from './page.module.css'
 import { TodosContainer } from '../../components/TodosContainer';
+import { TodoDisplayContainer } from '../../components/TodoDisplayContainer';
 import { Calender } from '../../components/Calender';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation'
@@ -380,19 +381,30 @@ export default function Home() {
           <button className={isFlat ? styles.disabled : ''} disabled={isFlat} onClick={() => handleAddTodo(null)}>+</button>
         </div>
 
-        <TodosContainer 
-          parentid={null}
-          subTodos={rootTodos}
-          isFlat={isFlat}
-          filterDate={filterDate}
-          handleReturnDefault={handleReturnDefault}
-          handleAddTodo={handleAddTodo}
-          handleDeleteTodo={handleDeleteTodo}
-          handleEditTodo={handleEditTodo}
-          targetTodoId={targetTodoId}
-          resetTargetTodoId={resetTargetTodoId}
-          todos={todos}
-        />
+        {isFlat ? 
+            <TodoDisplayContainer 
+              filterDate={filterDate}
+              handleReturnDefault={handleReturnDefault}
+              todos={todos} /> 
+
+            : 
+
+            <TodosContainer 
+            parentid={null}
+            subTodos={rootTodos}
+            isFlat={isFlat}
+            filterDate={filterDate}
+            handleReturnDefault={handleReturnDefault}
+            handleAddTodo={handleAddTodo}
+            handleDeleteTodo={handleDeleteTodo}
+            handleEditTodo={handleEditTodo}
+            targetTodoId={targetTodoId}
+            resetTargetTodoId={resetTargetTodoId}
+            todos={todos}
+          
+        />}
+
+        
         
       </main>
     ) );
