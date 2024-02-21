@@ -27,7 +27,7 @@
 }
 
 .subtodoHighlight2 {
-  border-left: 4px solid rgb(255, 169, 40);
+  border-left: 4px solid #0DC7E0;
 }
 
 .todoscontainer div {
@@ -88,7 +88,7 @@ span.circle {
 .highlight2 {
   border-radius: 5px;
   padding: 2px 8px;
-  background-color:  rgb(255, 169, 40);
+  background-color:  #0DC7E0;
   color: #1b1e1f;
 }
 

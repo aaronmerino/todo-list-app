@@ -37,7 +37,7 @@ export function Todo({
     if (targetTodoId !== null) {
       if (targetTodoId === tid) {
         
-        containerRef.current.scrollIntoView({ behavior: 'smooth', block: "center" });
+        containerRef.current.scrollIntoView({ behavior: 'smooth', block: "nearest" });
 
         let timerId = setTimeout(() => {
           resetTargetTodoId(tid);
